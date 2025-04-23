@@ -5,6 +5,7 @@ import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import authApi from "../../../api/authAPI";
 
 const MerchantRegistrationForm = () => {
   // Form data state
@@ -25,6 +26,7 @@ const MerchantRegistrationForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -76,13 +78,10 @@ const MerchantRegistrationForm = () => {
         role: formData.role,
       };
 
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/merchant-register",
-        userData
-      );
+      const response = await authApi.post(`/auth/merchant-register`, userData);
 
-      localStorage.setItem("token", response.data.token);
-      navigate("/merchant-login"); // Redirect to login page
+      localStorage.setItem("pendingEmail", formData.email);
+      navigate("/verify-email");
     } catch (err) {
       alert(err.response?.data?.message || "Registration failed");
     }

@@ -5,11 +5,13 @@ import logo2 from "../../../assets/logo2.png";
 import GoogleLogo from "../../../assets/GoogleLogo.webp";
 import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
+import authApi from "../../../api/authAPI";
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  // const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -18,10 +20,7 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       // Call your actual backend API
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        form
-      );
+      const res = await authApi.post(`/auth/login`, form);
 
       const { token, user } = res.data;
 
