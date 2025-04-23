@@ -1,0 +1,175 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import logo2 from "../../../assets/logo2.png";
+import GoogleLogo from "../../../assets/GoogleLogo.webp";
+import FacebookLogo from "../../../assets/FacebookLogo.webp";
+import AppleLogo from "../../../assets/AppleLogo.svg";
+
+const MerchantLoginForm = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Call your actual backend API
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        form
+      );
+
+      const { token, user } = res.data;
+
+      // Store token and user data
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Redirect to dashboard
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed");
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md p-8 bg-white/80 backdrop-blur-md rounded-lg shadow-lg">
+      <div className="flex justify-center mb-2">
+        <div className="w-28 h-12 flex items-center justify-center">
+          <img
+            src={logo2}
+            alt="Logo"
+            className="w-full h-full object-contain"
+          />
+        </div>
+      </div>
+
+      <h2 className="text-2xl font-bold text-center">Merchant Login</h2>
+      <p className="text-gray-500 text-center mb-8">
+        Please enter your details to sign in
+      </p>
+
+      {/* Social login options */}
+      {/* <div className="flex justify-center gap-6 mb-8">
+        {[GoogleLogo, FacebookLogo, AppleLogo].map((logo, i) => (
+          <button
+            key={i}
+            className="p-2 rounded-full border border-gray-200 hover:bg-gray-50 bg-white"
+          >
+            <img src={logo} alt="logo" className="w-6 h-6 object-contain" />
+          </button>
+        ))}
+      </div> */}
+      {/* 
+      <div className="relative mb-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-200"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white text-gray-500">or</span>
+        </div>
+      </div> */}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Email address
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+            placeholder="Enter your email"
+            onChange={handleChange}
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Password
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+              placeholder="••••••••"
+              onChange={handleChange}
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+              onClick={() => {
+                const passwordInput = document.getElementById("password");
+                passwordInput.type =
+                  passwordInput.type === "password" ? "text" : "password";
+              }}
+            >
+              <svg
+                className="h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path
+                  fillRule="evenodd"
+                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <label className="flex items-center text-sm">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={() => setRememberMe(!rememberMe)}
+              className="mr-2 text-red-600"
+            />
+            Remember me
+          </label>
+          <a href="#" className="text-sm text-purple-600 hover:underline">
+            Forgot password?
+          </a>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full py-2 px-4 rounded-md text-white font-semibold shadow-md"
+          style={{ backgroundColor: "#C83C3C" }}
+        >
+          Login
+        </button>
+      </form>
+
+      <p className="mt-6 text-center text-sm text-gray-500">
+        <a
+          href="/merchant-register"
+          className="text-purple-600 hover:underline font-medium"
+        >
+          Create an account
+        </a>
+      </p>
+    </div>
+  );
+};
+
+export default MerchantLoginForm;
