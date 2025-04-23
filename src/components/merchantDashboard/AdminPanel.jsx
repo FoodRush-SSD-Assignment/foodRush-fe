@@ -1,25 +1,39 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import authApi from "../../api/authAPI";
 
 const AdminPanel = () => {
-  const [users, setUsers] = useState([]);
+  const [userCounts, setUserCounts] = useState({
+    customer: 0,
+    restaurantOwner: 0,
+    deliveryPerson: 0,
+  });
   const [loading, setLoading] = useState(true);
-  //   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
         const res = await authApi.get(`/auth/getusers`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setUsers(res.data.users || res.data); // Adjust depending on your backend response
-        setLoading(false);
+
+        const users = res.data.users || res.data;
+        const counts = {
+          customer: 0,
+          restaurantOwner: 0,
+          deliveryPerson: 0,
+        };
+
+        users.forEach((user) => {
+          if (counts[user.role] !== undefined) {
+            counts[user.role]++;
+          }
+        });
+
+        setUserCounts(counts);
       } catch (err) {
         console.error("Failed to fetch users", err);
+      } finally {
         setLoading(false);
       }
     };
@@ -28,32 +42,28 @@ const AdminPanel = () => {
   }, []);
 
   return (
-    <div className="mt-6 p-4 bg-red-100 border border-red-300 rounded-lg">
-      <h2 className="text-lg font-semibold text-red-700 mb-4">Admin Panel</h2>
-      <p className="text-sm text-red-600 mb-4">
-        Manage users, view reports, and control platform settings.
-      </p>
-
+    <div className="mt-6 p-4">
       {loading ? (
-        <p className="text-gray-600">Loading users...</p>
-      ) : users.length === 0 ? (
-        <p className="text-gray-500">No users found.</p>
+        <p className="text-gray-600">Loading...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {users.map((user) => (
-            <div
-              key={user._id}
-              className="bg-white rounded shadow-md p-4 border border-gray-200"
-            >
-              <h3 className="font-semibold text-gray-800">
-                {user.firstname} {user.lastname}
-              </h3>
-              <p className="text-sm text-gray-600">Email: {user.email}</p>
-              <p className="text-sm text-gray-600">Role: {user.role}</p>
-              <p className="text-sm text-gray-500 mt-2">NIC: {user.nic}</p>
-              <p className="text-sm text-gray-500">Mobile: {user.mobileno}</p>
+        <div>
+          <h3 className="text-md font-semibold text-secondary mb-2">
+            Active Users
+          </h3>
+          <div className="flex gap-4 mb-6">
+            <div className="bg-primary text-white px-6 py-4 rounded text-center w-40">
+              <p className="text-sm">Customers</p>
+              <p className="text-2xl font-bold">{userCounts.customer}</p>
             </div>
-          ))}
+            <div className="bg-primary text-white px-6 py-4 rounded text-center w-40">
+              <p className="text-sm">Restaurant Owners</p>
+              <p className="text-2xl font-bold">{userCounts.restaurantOwner}</p>
+            </div>
+            <div className="bg-primary text-white px-6 py-4 rounded text-center w-40">
+              <p className="text-sm">Drivers</p>
+              <p className="text-2xl font-bold">{userCounts.deliveryPerson}</p>
+            </div>
+          </div>
         </div>
       )}
     </div>
