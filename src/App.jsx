@@ -6,7 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Dashboard from "./components/DashBoard";
+import Dashboard from "./pages/Dashboard";
 import LandingPage from "./pages/LandingPage";
 //auth services
 import LoginPage from "./pages/auth/customer/LoginPage";

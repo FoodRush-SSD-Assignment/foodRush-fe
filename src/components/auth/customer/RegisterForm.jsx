@@ -5,6 +5,7 @@ import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import authApi from "../../../api/authAPI";
 
 const RegistrationForm = () => {
   // Form data state
@@ -24,6 +25,7 @@ const RegistrationForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -73,10 +75,7 @@ const RegistrationForm = () => {
         password: formData.password,
       };
 
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/customer-register",
-        userData
-      );
+      const response = await authApi.post(`/auth/customer-register`, userData);
 
       localStorage.setItem("pendingEmail", formData.email);
       navigate("/verify-email");

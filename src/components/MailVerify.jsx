@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo2 from "../assets/logo2.png";
+import authApi from "../api/authAPI";
 
 const VerifyEmailForm = () => {
   const [code, setCode] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const [resendCount, setResendCount] = useState(0);
+  const [cooldown, setCooldown] = useState(0);
+  //   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const storedEmail = localStorage.getItem("pendingEmail");
@@ -18,6 +22,13 @@ const VerifyEmailForm = () => {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -27,16 +38,46 @@ const VerifyEmailForm = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/verify-email", {
+      const res = await authApi.post(`/auth/verify-email`, {
         email,
         code,
       });
 
-      alert("Email verified successfully! You can now log in.");
+      alert("Email verified successfully!");
+
+      // Optional: store this if needed
       localStorage.removeItem("pendingEmail");
-      navigate("/login");
+
+      // Redirect based on role (assuming backend returns role)
+      const role = res.data?.role;
+
+      if (role === "customer") {
+        navigate("/login");
+      } else if (
+        ["admin", "restaurantOwner", "deliveryPerson"].includes(role)
+      ) {
+        navigate("/merchant-login");
+      } else {
+        navigate("/login"); // fallback
+      }
     } catch (err) {
       alert(err.response?.data?.message || "Verification failed");
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (resendCount >= 2) {
+      setCooldown(60); // 1 minute cooldown
+      setResendCount(0); // Reset after cooldown
+      return;
+    }
+
+    try {
+      await authApi.post(`/auth/resend-code`, { email });
+      alert("A new code has been sent to your email.");
+      setResendCount(resendCount + 1);
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to resend code");
     }
   };
 
@@ -85,6 +126,19 @@ const VerifyEmailForm = () => {
         >
           Verify
         </button>
+        <div className="text-sm text-center text-gray-500">
+          Didn’t receive the code?{" "}
+          <button
+            type="button"
+            className={`text-purple-600 font-semibold ${
+              cooldown > 0 ? "opacity-50 cursor-not-allowed" : "hover:underline"
+            }`}
+            onClick={handleResendCode}
+            disabled={cooldown > 0}
+          >
+            {cooldown > 0 ? `Try again in ${cooldown}s` : "Resend Code"}
+          </button>
+        </div>
       </form>
     </div>
   );
