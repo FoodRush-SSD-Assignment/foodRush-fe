@@ -14,6 +14,11 @@ import RegisterPage from "./pages/auth/customer/RegisterPage";
 import MerchantLoginPage from "./pages/auth/merchant/MerchantLoginPage";
 import MerchantRegisterPage from "./pages/auth/merchant/MerchantRegisterPage";
 import VerifyEmailForm from "./components/MailVerify";
+import StripeCheckoutButton from "./components/StripeCheckoutButton";
+
+//admin services
+import UserRolePage from "./components/admin/usersRolePage";
+
 function App() {
   return (
     <Router>
@@ -27,6 +32,11 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/landing-page" element={<LandingPage />} />
         <Route path="/verify-email" element={<VerifyEmailForm />} />
+        <Route path="/admin/users/:role" element={<UserRolePage />} />
+        <Route
+          path="/StripeCheckoutButton"
+          element={<StripeCheckoutButton />}
+        />
       </Routes>
     </Router>
   );
