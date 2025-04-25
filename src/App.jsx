@@ -14,6 +14,11 @@ import RegisterPage from "./pages/auth/customer/RegisterPage";
 import MerchantLoginPage from "./pages/auth/merchant/MerchantLoginPage";
 import MerchantRegisterPage from "./pages/auth/merchant/MerchantRegisterPage";
 import VerifyEmailForm from "./components/MailVerify";
+
+//restaurant services
+import CategoryPage from "../src/pages/restaurant/CategoryPage";
+import RestaurantDetailPage from "../src/pages/restaurant/RestaurantDetail";
+
 function App() {
   return (
     <Router>
@@ -27,6 +32,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/landing-page" element={<LandingPage />} />
         <Route path="/verify-email" element={<VerifyEmailForm />} />
+        <Route path="/category/:type" element={<CategoryPage />} />
+        <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
       </Routes>
     </Router>
   );
