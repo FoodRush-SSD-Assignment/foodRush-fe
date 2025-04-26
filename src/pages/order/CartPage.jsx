@@ -1,25 +1,40 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import NavBar from "../../components/NavBar";
 import CartItem from "../../components/order/CartItem";
 import orderApi from "../../api/orderApi";
+import CheckoutDetailsForm from "../../components/order/CheckoutDetailsForm";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [restaurantName, setRestaurantName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    name: "",
+    contactNumber: "",
+    street: "",
+    city: "",
+    province: "",
+    postalCode: "",
+    paymentMethod: "card"
+  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const res = await orderApi.get("/order-service/cart/getCart", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Use the token
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         setCartItems(res.data.items || []);
         setRestaurantName(res.data.restaurantName || "");
+        setFormData(prev => ({
+          ...prev,
+          name: `${res.data.customerName || ""}`
+        }));
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch cart:", err);
@@ -43,6 +58,36 @@ const CartPage = () => {
     setCartItems(updatedCart.items);
   };
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handlePlaceOrder = async () => {
+    try {
+      const orderData = {
+        deliveryAddress: {
+          street: formData.street,
+          city: formData.city,
+          postalCode: formData.postalCode,
+          province: formData.province,
+        },
+        paymentMethod: formData.paymentMethod,
+        customerMobileNo: formData.contactNumber,
+      };
+
+      const res = await orderApi.post("/order-service/order/placeOrder", orderData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+  
+      const createdOrderId = res.data.order.orderId;;
+      alert("Order placed successfully!");
+      navigate(`/checkout/${createdOrderId}`);
+    } catch (err) {
+      console.error("Failed to place order:", err);
+      alert("Failed to place order. Try again.");
+    }
+  };
+
   return (
     <div className="w-full">
       <NavBar />
@@ -60,7 +105,7 @@ const CartPage = () => {
       </div>
 
       {/* Cart Section */}
-      <div className="p-6" style={{ maxWidth: "1600px", margin: "0 auto" }}>
+      <div className="p-6" style={{ maxWidth: "1500px", margin: "0 auto" }}>
         <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
 
         {loading ? (
@@ -69,6 +114,7 @@ const CartPage = () => {
           <p className="text-gray-500">Your cart is empty.</p>
         ) : (
           <>
+            <div className="border rounded-lg p-6 mb-6">
             <div className="text-lg font-semibold mb-4">
               {restaurantName || "Restaurant"}
             </div>
@@ -85,13 +131,13 @@ const CartPage = () => {
               Total Price:{" "}
               <span className="ml-2">Rs. {totalPrice.toFixed(2)}</span>
             </div>
-
-            {/* Checkout Button */}
-            <div className="flex justify-end mt-4">
-              <button className="bg-primary text-white px-6 py-2 rounded-lg">
-                Checkout
-              </button>
             </div>
+
+            <CheckoutDetailsForm
+              formData={formData}
+              handleChange={handleChange}
+              handlePlaceOrder={handlePlaceOrder}
+            />            
           </>
         )}
       </div>

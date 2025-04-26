@@ -21,6 +21,7 @@ import RestaurantDetailPage from "../src/pages/restaurant/RestaurantDetail";
 
 //order services
 import CartPage from "./pages/order/CartPage";
+import CheckoutPage from "./pages/order/CheckoutPage";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/category/:type" element={<CategoryPage />} />
         <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout/:orderId" element={<CheckoutPage />} />
       </Routes>
     </Router>
   );

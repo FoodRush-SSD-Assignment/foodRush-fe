@@ -17,12 +17,12 @@ const CartItem = ({ item, onUpdateCart, onDeleteItem }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Add token
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-      setQuantity(newQuantity); // Update local quantity state
-      onUpdateCart(response.data.cart); // Pass updated cart data to parent
+      setQuantity(newQuantity);
+      onUpdateCart(response.data.cart);
     } catch (err) {
       console.error("Failed to update quantity:", err);
     }
