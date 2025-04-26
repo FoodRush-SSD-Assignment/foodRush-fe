@@ -6,10 +6,11 @@ import DeliveryTasks from "../components/merchantDashboard/DeliveryTasks";
 import MerchantNavbar from "../components/navbar/merchantNavbar";
 
 const Dashboard = () => {
-  const { user } = useContext(AuthContext); // 👉 get user from AuthContext
+  const { user, loading } = useContext(AuthContext); // 👉 get user and loading from AuthContext
 
-  if (!user) return <div className="p-8">Loading...</div>;
-  console.log(user);
+  if (loading) return <div className="p-8">Loading...</div>; // Show loading state
+
+  if (!user) return <div className="p-8">Not authorized</div>; // Handle unauthorized access
 
   return (
     <>

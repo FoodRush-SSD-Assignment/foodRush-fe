@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo2 from "../../../assets/logo2.png";
+import { AuthContext } from "../../../context/AuthContext"; 
 import GoogleLogo from "../../../assets/GoogleLogo.webp";
 import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
 import authApi from "../../../api/authAPI";
+import { useContext } from "react"; 
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   // const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const handleChange = (e) =>
@@ -19,16 +22,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Call your actual backend API
-      const res = await authApi.post(`/auth/login`, form);
-
-      const { token, user } = res.data;
-
-      // Store token and user data
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      // Redirect to landing page
+      await login(form); // <-- delegate login to context
       navigate("/landing-page", { replace: true });
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");

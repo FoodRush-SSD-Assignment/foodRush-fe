@@ -6,11 +6,16 @@ import GoogleLogo from "../../../assets/GoogleLogo.webp";
 import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
 import authApi from "../../../api/authAPI";
+import { useContext } from "react"; 
+import { AuthContext } from "../../../context/AuthContext"; // adjust the path if needed
+
 
 const MerchantLoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
   // const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const handleChange = (e) =>
@@ -19,21 +24,19 @@ const MerchantLoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Call your actual backend API
-      const res = await authApi.post(`/auth/login`, form);
-
-      const { token, user } = res.data;
-
-      // Store token and user data
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      // Redirect to dashboard
-      navigate("/dashboard", { replace: true });
+      const result = await login(form.email, form.password); // <-- use context login function
+  
+      if (result.success) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        alert(result.message);
+      }
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      console.error(err);
+      alert("Something went wrong. Please try again.");
     }
   };
+  
 
   return (
     <div className="w-full max-w-md p-8 bg-white/80 backdrop-blur-md rounded-lg shadow-lg">
