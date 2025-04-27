@@ -1,7 +1,7 @@
 const CheckoutDetailsForm = ({ formData, handleChange, handlePlaceOrder }) => {
   return (
     <div className="border rounded-lg p-6">
-      <h2 className="text-xl font-semibold mb-4">Add checkout Details</h2>
+      <h2 className="text-xl font-semibold mb-7">Add checkout Details</h2>
 
       <div className="grid grid-cols-1 gap-4">
         {/* Name */}
@@ -52,7 +52,7 @@ const CheckoutDetailsForm = ({ formData, handleChange, handlePlaceOrder }) => {
             value={formData.city}
             onChange={handleChange}
             placeholder="City"
-            className="border p-2 rounded"
+            className="border p-2 rounded mb-3"
           />
           <input
             type="text"
@@ -60,7 +60,7 @@ const CheckoutDetailsForm = ({ formData, handleChange, handlePlaceOrder }) => {
             value={formData.postalCode}
             onChange={handleChange}
             placeholder="Postal Code"
-            className="border p-2 rounded"
+            className="border p-2 rounded mb-3"
           />
         </div>
 
@@ -71,7 +71,7 @@ const CheckoutDetailsForm = ({ formData, handleChange, handlePlaceOrder }) => {
             name="paymentMethod"
             value={formData.paymentMethod}
             onChange={handleChange}
-            className="border p-2 rounded w-full mt-"
+            className="border p-2 rounded w-full mt-4 mb-4"
           >
             <option value="card">Card</option>
             <option value="cash">Cash</option>

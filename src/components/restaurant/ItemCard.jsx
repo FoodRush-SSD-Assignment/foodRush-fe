@@ -18,7 +18,8 @@ const ItemCard = ({ item }) => {
       alert(`Added ${item.itemName} to cart`);
     } catch (error) {
       console.error("Error adding to cart:", error.response?.data || error.message);
-      alert("Failed to add item to cart");
+      const errorMessage = error.response?.data?.message || "Failed to add item to cart";
+      alert(errorMessage);
     }
   }
 
