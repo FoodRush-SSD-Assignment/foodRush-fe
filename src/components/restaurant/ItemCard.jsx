@@ -1,9 +1,26 @@
 import React from 'react';
+import orderApi from '../../api/orderApi';
 
 const ItemCard = ({ item }) => {
-  const handleAddToCart = () => {
-    console.log(`Added ${item.itemName} to cart`);
-  };
+  const handleAddToCart = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await orderApi.post("/order-service/cart/addToCart",
+        { itemIds: [item._id] },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Cart updated:", response.data);
+      alert(`Added ${item.itemName} to cart`);
+    } catch (error) {
+      console.error("Error adding to cart:", error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || "Failed to add item to cart";
+      alert(errorMessage);
+    }
+  }
 
   return (
     <div className="bg-lightgray rounded-2xl border border-darkgrey shadow-sm w-[500px] p-6 flex justify-between items-center">

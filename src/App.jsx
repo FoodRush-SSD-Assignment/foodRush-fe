@@ -17,6 +17,10 @@ import RestaurantDetailPage from '../src/pages/restaurant/RestaurantDetail'
 //rest owner services
 import OwnerWorkPage from '../src/pages/restaurant/OwnerWorkPage';
 
+//order services
+import CartPage from "./pages/order/CartPage";
+import CheckoutPage from "./pages/order/CheckoutPage";
+
 function App() {
   return (
     <Router>
@@ -32,6 +36,8 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmailForm />} />
         <Route path="/category/:type" element={<CategoryPage />} />
         <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout/:orderId" element={<CheckoutPage />} />
         <Route path="/OwnerWorkPage/:id" element={<OwnerWorkPage />} />
       </Routes>
     </Router>
