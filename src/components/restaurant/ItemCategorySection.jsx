@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import restaurantApi from '../../api/restaurantApi';
 import ItemCard from './ItemCard';
+import Search from './Search';
 
 const categories = ['mains', 'sides', 'desserts', 'beverages'];
 
@@ -47,18 +48,7 @@ const ItemCategorySection = ({ restaurantId }) => {
       </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="p-6">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search for a food item"
-            className="w-full pl-10 pr-4 py-3 bg-lightgray rounded-md focus:outline-none"
-          />
-          <span className="absolute left-3 top-3.5 text-gray-400">🔍</span>
-        </div>
-      </div>
-      
+      <Search/>
       {/* Item List */}
       <div style={{ flex: 1 }}>
         <div className="px-6 space-y-4">

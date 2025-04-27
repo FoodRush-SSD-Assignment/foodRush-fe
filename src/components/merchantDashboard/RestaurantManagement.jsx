@@ -1,4 +1,5 @@
 import react, { useEffect, useState } from "react";
+import AddItemForm from "../restaurant/AddItemForm";
 
 const RestaurantManagement = () => {
   return (
@@ -9,6 +10,7 @@ const RestaurantManagement = () => {
       <p className="text-sm text-green-600">
         Add menus, manage orders, and view revenue stats.
       </p>
+      <AddItemForm/>
     </div>
   );
 };

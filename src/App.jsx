@@ -1,13 +1,9 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import {BrowserRouter as Router,Routes,Route,Navigate,} from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
 import LandingPage from "./pages/LandingPage";
+
 //auth services
 import LoginPage from "./pages/auth/customer/LoginPage";
 import RegisterPage from "./pages/auth/customer/RegisterPage";
@@ -17,7 +13,9 @@ import VerifyEmailForm from "./components/MailVerify";
 
 //restaurant services
 import CategoryPage from "../src/pages/restaurant/CategoryPage";
-import RestaurantDetailPage from "../src/pages/restaurant/RestaurantDetail";
+import RestaurantDetailPage from '../src/pages/restaurant/RestaurantDetail'
+//rest owner services
+import OwnerWorkPage from '../src/pages/restaurant/OwnerWorkPage';
 
 function App() {
   return (
@@ -34,6 +32,7 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmailForm />} />
         <Route path="/category/:type" element={<CategoryPage />} />
         <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
+        <Route path="/OwnerWorkPage/:id" element={<OwnerWorkPage />} />
       </Routes>
     </Router>
   );
