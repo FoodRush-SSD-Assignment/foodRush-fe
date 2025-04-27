@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaShoppingCart, FaUser, FaSignOutAlt, FaCompass } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const NavBar = () => {
   return (
@@ -17,10 +18,12 @@ const NavBar = () => {
           <span>Browse</span>
         </button>
         
-        <button className="flex items-center space-x-2 hover:text-lightgray">
-          <FaShoppingCart className="h-5 w-5" />
-          <span>My Cart</span>
-        </button>
+        <Link to="/cart">
+          <button className="flex items-center space-x-2 hover:text-lightgray">
+            <FaShoppingCart className="h-5 w-5" />
+            <span>My Cart</span>
+          </button>
+        </Link>
         
         <button className="flex items-center space-x-2 hover:text-lightgray">
           <FaUser className="h-5 w-5" />

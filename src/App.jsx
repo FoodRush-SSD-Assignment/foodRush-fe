@@ -19,6 +19,10 @@ import VerifyEmailForm from "./components/MailVerify";
 import CategoryPage from "../src/pages/restaurant/CategoryPage";
 import RestaurantDetailPage from "../src/pages/restaurant/RestaurantDetail";
 
+//order services
+import CartPage from "./pages/order/CartPage";
+import CheckoutPage from "./pages/order/CheckoutPage";
+
 function App() {
   return (
     <Router>
@@ -34,6 +38,8 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmailForm />} />
         <Route path="/category/:type" element={<CategoryPage />} />
         <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout/:orderId" element={<CheckoutPage />} />
       </Routes>
     </Router>
   );
