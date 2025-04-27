@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import NavBar from "../../components/NavBar";
+// import NavBar from "../../components/NavBar";
 import CartItem from "../../components/order/CartItem";
 import orderApi from "../../api/orderApi";
 import CheckoutDetailsForm from "../../components/order/CheckoutDetailsForm";
@@ -17,7 +17,7 @@ const CartPage = () => {
     city: "",
     province: "",
     postalCode: "",
-    paymentMethod: "card"
+    paymentMethod: "card",
   });
   const navigate = useNavigate();
 
@@ -31,9 +31,9 @@ const CartPage = () => {
         });
         setCartItems(res.data.items || []);
         setRestaurantName(res.data.restaurantName || "");
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          name: `${res.data.customerName || ""}`
+          name: `${res.data.customerName || ""}`,
         }));
         setLoading(false);
       } catch (err) {
@@ -75,11 +75,15 @@ const CartPage = () => {
         customerMobileNo: formData.contactNumber,
       };
 
-      const res = await orderApi.post("/order-service/order/placeOrder", orderData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-  
-      const createdOrderId = res.data.order.orderId;;
+      const res = await orderApi.post(
+        "/order-service/order/placeOrder",
+        orderData,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+
+      const createdOrderId = res.data.order.orderId;
       alert("Order placed successfully!");
       navigate(`/checkout/${createdOrderId}`);
     } catch (err) {
@@ -90,7 +94,7 @@ const CartPage = () => {
 
   return (
     <div className="w-full">
-      <NavBar />
+      {/* <NavBar /> */}
 
       {/* Breadcrumb navigation */}
       <div className="flex justify-between items-center px-4 py-2 border-b">
@@ -115,29 +119,34 @@ const CartPage = () => {
         ) : (
           <>
             <div className="border rounded-lg p-6 mb-6">
-            <div className="text-lg font-semibold mb-4">
-              {restaurantName || "Restaurant"}
-            </div>
+              <div className="text-lg font-semibold mb-4">
+                {restaurantName || "Restaurant"}
+              </div>
 
-            {/* Cart Items List */}
-            <div className="flex flex-col gap-4">
-              {cartItems.map((item, idx) => (
-                <CartItem key={idx} item={item} onUpdateCart={updateCart} onDeleteItem={deleteItem}/>
-              ))}
-            </div>
+              {/* Cart Items List */}
+              <div className="flex flex-col gap-4">
+                {cartItems.map((item, idx) => (
+                  <CartItem
+                    key={idx}
+                    item={item}
+                    onUpdateCart={updateCart}
+                    onDeleteItem={deleteItem}
+                  />
+                ))}
+              </div>
 
-            {/* Total Price */}
-            <div className="flex justify-end mt-6 text-lg font-semibold">
-              Total Price:{" "}
-              <span className="ml-2">Rs. {totalPrice.toFixed(2)}</span>
-            </div>
+              {/* Total Price */}
+              <div className="flex justify-end mt-6 text-lg font-semibold">
+                Total Price:{" "}
+                <span className="ml-2">Rs. {totalPrice.toFixed(2)}</span>
+              </div>
             </div>
 
             <CheckoutDetailsForm
               formData={formData}
               handleChange={handleChange}
               handlePlaceOrder={handlePlaceOrder}
-            />            
+            />
           </>
         )}
       </div>

@@ -3,9 +3,9 @@ import logo2 from "../../../assets/logo2.png";
 import GoogleLogo from "../../../assets/GoogleLogo.webp";
 import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import authApi from "../../../api/authAPI";
+import { showSuccess, showError } from "../../../utils/alertService";
 
 const RegistrationForm = () => {
   // Form data state
@@ -16,35 +16,199 @@ const RegistrationForm = () => {
     mobileNo: "",
     dob: "",
     nic: "",
-    address: "",
+    address: {
+      street: "",
+      city: "",
+      postalCode: "",
+      province: "",
+    },
     password: "",
     confirmPassword: "",
   });
+
+  // Errors state
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    mobileNo: "",
+    dob: "",
+    nic: "",
+    address: {
+      street: "",
+      city: "",
+      postalCode: "",
+      province: "",
+    },
+    password: "",
+    confirmPassword: "",
+  });
+
   const navigate = useNavigate();
   // Current step state
   const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  // const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    // Special validation for DOB while typing
+    if (name === "dob") {
+      const dob = new Date(value);
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear();
+      const monthDifference = today.getMonth() - dob.getMonth();
+      const dayDifference = today.getDate() - dob.getDate();
+      const actualAge =
+        monthDifference > 0 || (monthDifference === 0 && dayDifference >= 0)
+          ? age
+          : age - 1;
+
+      if (actualAge < 18) {
+        setErrors((prev) => ({
+          ...prev,
+          dob: "You must be at least 18 years old",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, dob: "" }));
+      }
+    } else {
+      // Clear the error normally for other fields
+      if (errors[name]) {
+        setErrors({ ...errors, [name]: "" });
+      }
+    }
+  };
+
+  const validate = () => {
+    let tempErrors = {};
+
+    // Example: Checking for empty fields
+    if (!formData.dob) {
+      tempErrors.dob = "Date of Birth is required";
+    } else {
+      const dob = new Date(formData.dob);
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear();
+      const monthDifference = today.getMonth() - dob.getMonth();
+      const dayDifference = today.getDate() - dob.getDate();
+
+      // Adjust if birthday hasn't occurred yet this year
+      const actualAge =
+        monthDifference > 0 || (monthDifference === 0 && dayDifference >= 0)
+          ? age
+          : age - 1;
+
+      if (actualAge < 16) {
+        tempErrors.dob = "You must be at least 16 years old";
+      }
+    }
+
+    setErrors(tempErrors);
+
+    // Return true if no errors
+    return Object.keys(tempErrors).length === 0;
+  };
+
+  const validateStep1 = () => {
+    let tempErrors = { ...errors };
+    let isValid = true;
+
+    if (!formData.firstName) {
+      tempErrors.firstName = "First name is required";
+      isValid = false;
+    }
+
+    if (!formData.lastName) {
+      tempErrors.lastName = "Last name is required";
+      isValid = false;
+    }
+
+    if (!formData.email) {
+      tempErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      tempErrors.email = "Email is invalid";
+      isValid = false;
+    }
+
+    setErrors(tempErrors);
+    return isValid;
+  };
+
+  const validateStep2 = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+
+    if (!formData.mobileNo.trim()) {
+      newErrors.mobileNo = "Mobile number is required";
+      isValid = false;
+    }
+
+    if (!formData.dob) {
+      newErrors.dob = "Date of birth is required";
+      isValid = false;
+    } else {
+      const dob = new Date(formData.dob);
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear();
+      const monthDifference = today.getMonth() - dob.getMonth();
+      const dayDifference = today.getDate() - dob.getDate();
+      const actualAge =
+        monthDifference > 0 || (monthDifference === 0 && dayDifference >= 0)
+          ? age
+          : age - 1;
+
+      if (actualAge < 18) {
+        newErrors.dob = "You must be at least 18 years old";
+        isValid = false;
+      }
+    }
+
+    if (!formData.nic.trim()) {
+      newErrors.nic = "NIC number is required";
+      isValid = false;
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = "Address is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const validateStep3 = () => {
+    let tempErrors = { ...errors };
+    let isValid = true;
+
+    if (!formData.password) {
+      tempErrors.password = "Password is required";
+      isValid = false;
+    }
+
+    if (!formData.confirmPassword) {
+      tempErrors.confirmPassword = "Please confirm your password";
+      isValid = false;
+    } else if (formData.password !== formData.confirmPassword) {
+      tempErrors.confirmPassword = "Passwords do not match";
+      isValid = false;
+    }
+
+    setErrors(tempErrors);
+    return isValid;
   };
 
   const handleNext = () => {
     if (currentStep === 1) {
-      if (!formData.firstName || !formData.lastName || !formData.email) {
-        alert("Please fill all the fields in step 1");
+      if (!validateStep1()) {
         return;
       }
     } else if (currentStep === 2) {
-      if (
-        !formData.mobileNo ||
-        !formData.dob ||
-        !formData.nic ||
-        !formData.address
-      ) {
-        alert("Please fill all the fields in step 2");
+      if (!validateStep2()) {
         return;
       }
     }
@@ -58,8 +222,10 @@ const RegistrationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+    if (!validate()) {
+      return;
+    }
+    if (!validateStep3()) {
       return;
     }
 
@@ -76,11 +242,16 @@ const RegistrationForm = () => {
       };
 
       const response = await authApi.post(`/auth/customer-register`, userData);
+      showSuccess("Account Created!", "Verify your email and login");
 
       localStorage.setItem("pendingEmail", formData.email);
+
       navigate("/verify-email");
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
+      showError(
+        "Registration failed",
+        err.response?.data?.message || "An error occurred"
+      );
     }
   };
 
@@ -90,31 +261,31 @@ const RegistrationForm = () => {
         <div className="flex items-center">
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              currentStep >= 1 ? "bg-purple-600 text-white" : "bg-gray-200"
+              currentStep >= 1 ? "bg-red-600 text-white" : "bg-gray-200"
             }`}
           >
             1
           </div>
           <div
             className={`w-12 h-1 ${
-              currentStep >= 2 ? "bg-purple-600" : "bg-gray-200"
+              currentStep >= 2 ? "bg-red-600" : "bg-gray-200"
             }`}
           ></div>
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              currentStep >= 2 ? "bg-purple-600 text-white" : "bg-gray-200"
+              currentStep >= 2 ? "bg-red-600 text-white" : "bg-gray-200"
             }`}
           >
             2
           </div>
           <div
             className={`w-12 h-1 ${
-              currentStep >= 3 ? "bg-purple-600" : "bg-gray-200"
+              currentStep >= 3 ? "bg-red-600" : "bg-gray-200"
             }`}
           ></div>
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              currentStep >= 3 ? "bg-purple-600 text-white" : "bg-gray-200"
+              currentStep >= 3 ? "bg-red-600 text-white" : "bg-gray-200"
             }`}
           >
             3
@@ -141,12 +312,18 @@ const RegistrationForm = () => {
             id="firstName"
             name="firstName"
             type="text"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+              errors.firstName
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-red-500"
+            }`}
             placeholder="Enter your first name"
             value={formData.firstName}
             onChange={handleChange}
           />
+          {errors.firstName && (
+            <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+          )}
         </div>
         <div>
           <label
@@ -159,12 +336,18 @@ const RegistrationForm = () => {
             id="lastName"
             name="lastName"
             type="text"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+              errors.lastName
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-red-500"
+            }`}
             placeholder="Enter your last name"
             value={formData.lastName}
             onChange={handleChange}
           />
+          {errors.lastName && (
+            <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+          )}
         </div>
         <div>
           <label
@@ -177,18 +360,25 @@ const RegistrationForm = () => {
             id="email"
             name="email"
             type="email"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+              errors.email
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-red-500"
+            }`}
             placeholder="Enter your email"
             value={formData.email}
             onChange={handleChange}
           />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          )}
         </div>
         <div className="pt-4">
           <button
             type="button"
             onClick={handleNext}
-            className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white font-semibold"
+            style={{ backgroundColor: "#C83C3C" }}
           >
             Continue
           </button>
@@ -212,12 +402,18 @@ const RegistrationForm = () => {
             id="mobileNo"
             name="mobileNo"
             type="tel"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+              errors.mobileNo
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-red-500"
+            }`}
             placeholder="Enter your mobile number"
             value={formData.mobileNo}
             onChange={handleChange}
           />
+          {errors.mobileNo && (
+            <p className="mt-1 text-sm text-red-600">{errors.mobileNo}</p>
+          )}
         </div>
         <div>
           <label
@@ -230,11 +426,18 @@ const RegistrationForm = () => {
             id="dob"
             name="dob"
             type="date"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            max={new Date().toISOString().split("T")[0]}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+              errors.dob
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-red-500"
+            }`}
             value={formData.dob}
             onChange={handleChange}
           />
+          {errors.dob && (
+            <p className="mt-1 text-sm text-red-600">{errors.dob}</p>
+          )}
         </div>
         <div>
           <label
@@ -247,12 +450,18 @@ const RegistrationForm = () => {
             id="nic"
             name="nic"
             type="text"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+              errors.nic
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-red-500"
+            }`}
             placeholder="Enter your NIC number"
             value={formData.nic}
             onChange={handleChange}
           />
+          {errors.nic && (
+            <p className="mt-1 text-sm text-red-600">{errors.nic}</p>
+          )}
         </div>
         <div>
           <label
@@ -264,26 +473,33 @@ const RegistrationForm = () => {
           <textarea
             id="address"
             name="address"
-            required
             rows="3"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+              errors.address
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-red-500"
+            }`}
             placeholder="Enter your address"
             value={formData.address}
             onChange={handleChange}
           ></textarea>
+          {errors.address && (
+            <p className="mt-1 text-sm text-red-600">{errors.address}</p>
+          )}
         </div>
         <div className="flex gap-4 pt-4">
           <button
             type="button"
             onClick={handlePrevious}
-            className="w-1/2 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            className="w-1/2 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
           >
             Back
           </button>
           <button
             type="button"
             onClick={handleNext}
-            className="w-1/2 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            className="w-1/2 py-2 px-4 border border-transparent rounded-md shadow-sm text-white font-semibold"
+            style={{ backgroundColor: "#C83C3C" }}
           >
             Continue
           </button>
@@ -308,8 +524,11 @@ const RegistrationForm = () => {
               id="password"
               name="password"
               type={showPassword ? "text" : "password"}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+                errors.password
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-red-500"
+              }`}
               placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
@@ -334,6 +553,9 @@ const RegistrationForm = () => {
               </svg>
             </button>
           </div>
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+          )}
         </div>
         <div>
           <label
@@ -347,8 +569,11 @@ const RegistrationForm = () => {
               id="confirmPassword"
               name="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+                errors.confirmPassword
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-red-500"
+              }`}
               placeholder="••••••••"
               value={formData.confirmPassword}
               onChange={handleChange}
@@ -373,19 +598,25 @@ const RegistrationForm = () => {
               </svg>
             </button>
           </div>
+          {errors.confirmPassword && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.confirmPassword}
+            </p>
+          )}
         </div>
         <div className="pt-4 flex gap-4">
           <button
             type="button"
             onClick={handlePrevious}
-            className="w-1/2 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            className="w-1/2 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
           >
             Back
           </button>
           <button
             type="submit"
             onClick={handleSubmit}
-            className="w-1/2 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            className="w-1/2 py-2 px-4 border border-transparent rounded-md shadow-sm text-white font-semibold"
+            style={{ backgroundColor: "#C83C3C" }}
           >
             Register
           </button>
@@ -414,7 +645,7 @@ const RegistrationForm = () => {
       {renderStepIndicator()}
 
       {/* Social registration options */}
-      <div className="flex justify-center gap-6 mb-8">
+      {/* <div className="flex justify-center gap-6 mb-8">
         <button className="p-2 rounded-full border border-gray-200 hover:bg-gray-50 bg-white">
           <img
             src={GoogleLogo}
@@ -436,8 +667,8 @@ const RegistrationForm = () => {
             className="w-6 h-6 object-contain"
           />
         </button>
-      </div>
-
+      </div> */}
+      {/* 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-gray-200"></div>
@@ -445,9 +676,9 @@ const RegistrationForm = () => {
         <div className="relative flex justify-center text-sm">
           <span className="px-2 bg-white text-gray-500">or</span>
         </div>
-      </div>
+      </div> */}
 
-      <form className="space-y-4">
+      <form className="space-y-4" noValidate>
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
         {currentStep === 3 && renderStep3()}
@@ -457,7 +688,7 @@ const RegistrationForm = () => {
         Already have an account?
         <a
           href="/login"
-          className="font-medium text-purple-600 hover:text-purple-500 ml-1"
+          className="font-medium text-red-600 hover:text-red-500 ml-1"
         >
           Sign in
         </a>

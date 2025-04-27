@@ -1,8 +1,8 @@
 // src/pages/RestaurantDetailPage.jsx
-import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import restaurantApi from '../../api/restaurantApi';
-import ItemCategorySection from '../../components/restaurant/ItemCategorySection'; // ← Updated import
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import restaurantApi from "../../api/restaurantAPI";
+import ItemCategorySection from "../../components/restaurant/ItemCategorySection"; // ← Updated import
 
 const RestaurantDetailPage = () => {
   const { id } = useParams();
@@ -13,12 +13,12 @@ const RestaurantDetailPage = () => {
       try {
         const res = await restaurantApi.get(`/restaurants/${id}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         setRestaurant(res.data);
       } catch (error) {
-        console.error('Failed to fetch restaurant:', error);
+        console.error("Failed to fetch restaurant:", error);
       }
     };
 
@@ -30,9 +30,8 @@ const RestaurantDetailPage = () => {
   }
 
   return (
-    <div style={{ padding: '30px' }}>
+    <div style={{ padding: "30px" }}>
       <h1>{restaurant.restaurantName}</h1>
-
 
       {/* Tabbed category view */}
       <ItemCategorySection restaurantId={id} />
