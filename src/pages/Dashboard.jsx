@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import AdminPanel from "../components/merchantDashboard/AdminPanel";
 import RestaurantManagement from "../components/merchantDashboard/RestaurantManagement";
 import DeliveryTasks from "../components/merchantDashboard/DeliveryTasks";
-import MerchantNavbar from "../components/navbar/merchantNavbar";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -21,7 +20,6 @@ const Dashboard = () => {
   return (
     <>
       {" "}
-      <MerchantNavbar />
       <div className="p-8">
         <h1 className="text-2xl font-bold text-secondary">
           Welcome, {user.firstname}
