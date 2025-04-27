@@ -42,14 +42,28 @@ const App = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/merchant-login" element={<MerchantLoginPage />} />
         <Route path="/merchant-register" element={<MerchantRegisterPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/landing-page" element={<LandingPage />} />
-        <Route path="/verify-email" element={<VerifyEmailForm />} />
-        <Route path="/category/:type" element={<CategoryPage />} />
-        <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
 
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout/:orderId" element={<CheckoutPage />} />
+        {/* Protected Routes with Layout */}
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/landing-page" element={<LandingPage />} />
+          <Route path="/category/:type" element={<CategoryPage />} />
+          <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
+          <Route path="/admin/users/:role" element={<UserRolePage />} />
+          <Route path="/admin/users" element={<AllUsers />} />
+          <Route path="/stripe-checkout" element={<StripeCheckoutButton />} />
+          <Route path="/admin/user/:id" element={<UserPage />} />
+
+          <Route path="/admin/restaurant/:id" element={<RestaurantDetails />} />
+          <Route path="/admin/restaurants" element={<AllRestaurants />} />
+          <Route
+            path="/admin/restaurants/:id/edit"
+            element={<EditRestaurant />}
+          />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout/:orderId" element={<CheckoutPage />} />
+        </Route>
       </Routes>
     </Router>
   );

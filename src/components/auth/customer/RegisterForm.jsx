@@ -16,7 +16,12 @@ const RegistrationForm = () => {
     mobileNo: "",
     dob: "",
     nic: "",
-    address: "",
+    address: {
+      street: "",
+      city: "",
+      postalCode: "",
+      province: "",
+    },
     password: "",
     confirmPassword: "",
   });
@@ -29,7 +34,12 @@ const RegistrationForm = () => {
     mobileNo: "",
     dob: "",
     nic: "",
-    address: "",
+    address: {
+      street: "",
+      city: "",
+      postalCode: "",
+      province: "",
+    },
     password: "",
     confirmPassword: "",
   });
@@ -235,7 +245,6 @@ const RegistrationForm = () => {
       showSuccess("Account Created!", "Verify your email and login");
 
       localStorage.setItem("pendingEmail", formData.email);
-      // localStorage.setItem("pendingRole", "customer");
 
       navigate("/verify-email");
     } catch (err) {

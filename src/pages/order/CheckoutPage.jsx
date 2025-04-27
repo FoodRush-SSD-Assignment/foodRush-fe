@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import NavBar from "../../components/NavBar";
+// import NavBar from "../../components/NavBar";
 import orderApi from "../../api/orderApi";
 import OrderSummary from "../../components/order/OrderSummary";
 import OrderDetailConfirm from "../../components/order/OrderDetailConfirm";
@@ -28,7 +28,7 @@ const CheckoutPage = () => {
 
   return (
     <div className="w-full">
-      <NavBar />
+      {/* <NavBar /> */}
 
       <div className="flex justify-between items-center px-4 py-2 border-b">
         <div className="text-gray-500">
@@ -55,21 +55,17 @@ const CheckoutPage = () => {
           </div>
         )}
 
-<div className="flex justify-between mt-6">
-        <Link
-          to="/cart"
-          className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg"
-        >
-          Cancel
-        </Link>
-        <button
-          className="bg-primary text-white px-6 py-2 rounded-lg"
-        >
-          Pay Now
-        </button>
-      </div>
-
-        
+        <div className="flex justify-between mt-6">
+          <Link
+            to="/cart"
+            className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg"
+          >
+            Cancel
+          </Link>
+          <button className="bg-primary text-white px-6 py-2 rounded-lg">
+            Pay Now
+          </button>
+        </div>
       </div>
     </div>
   );

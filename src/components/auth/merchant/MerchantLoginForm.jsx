@@ -61,7 +61,6 @@ const MerchantLoginForm = () => {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("pendingRole", role);
 
       setTimeout(() => {
         navigate("/dashboard", { replace: true });

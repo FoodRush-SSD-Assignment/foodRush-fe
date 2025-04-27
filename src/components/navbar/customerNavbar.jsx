@@ -42,12 +42,18 @@ const CustomerNavbar = () => {
       </div>
 
       <div className="flex items-center space-x-6">
-        <button className="flex items-center space-x-2 hover:text-lightgray">
+        <button
+          className="flex items-center space-x-2 hover:text-lightgray"
+          onClick={() => navigate("/landing-page")}
+        >
           <FaCompass className="h-5 w-5" />
           <span>Browse</span>
         </button>
 
-        <button className="flex items-center space-x-2 hover:text-lightgray">
+        <button
+          className="flex items-center space-x-2 hover:text-lightgray"
+          onClick={() => navigate("/cart")}
+        >
           <FaShoppingCart className="h-5 w-5" />
           <span>My Cart</span>
         </button>

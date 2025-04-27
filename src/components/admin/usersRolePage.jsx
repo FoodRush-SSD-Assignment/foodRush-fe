@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import authApi from "../../api/authAPI";
 
 const UserRolePage = () => {
@@ -7,8 +7,8 @@ const UserRolePage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  // Format role name for display
   const formatRoleName = (role) => {
     switch (role) {
       case "customer":
@@ -45,7 +45,6 @@ const UserRolePage = () => {
     }
   }, [role]);
 
-  // Helper function to render status badge (if needed)
   const getStatusBadge = (status) => {
     switch (status) {
       case "active":
@@ -62,15 +61,13 @@ const UserRolePage = () => {
         );
       default:
         return (
-          <span className="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
+          <span className="inline-block w-3 h-3 bg-gray-400 rounded-full"></span>
         );
     }
   };
 
   return (
     <div className="pt-4 px-8 min-h-screen">
-      {/* Header with back button */}
-
       {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
@@ -78,12 +75,10 @@ const UserRolePage = () => {
       >
         &larr; Back
       </button>
-      <div>
-        {" "}
-        <h2 className="text-xl font-semibold text-secondary">
-          {formatRoleName(role)}
-        </h2>
-      </div>
+
+      <h2 className="text-xl font-semibold text-secondary mb-6">
+        {formatRoleName(role)}
+      </h2>
 
       {loading ? (
         <div className="text-center py-10">
@@ -93,42 +88,44 @@ const UserRolePage = () => {
         <div className="text-center py-10">
           <p className="text-red-500">{error}</p>
         </div>
+      ) : users.length === 0 ? (
+        <div className="text-center py-10">
+          <p className="text-gray-600">No {formatRoleName(role)} found</p>
+        </div>
       ) : (
-        <div>
-          {users.length === 0 ? (
-            <div className="text-center py-10">
-              <p className="text-gray-600">No {formatRoleName(role)} found</p>
-            </div>
-          ) : (
-            <div className="bg-lightgray rounded border-darkgrey border-[1px]">
-              {users.map((user) => (
-                <div key={user._id} className="border-b last:border-b-0 p-3">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="font-medium">
-                        {user.firstName} {user.lastName}
-                      </div>
-                      <div className="text-secondary text-opacity-50 text-sm flex gap-1">
-                        <span>{user.email}</span>
-                        {user.phone && (
-                          <>
-                            <span>•</span>
-                            <span>{user.phone}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-secondary">
-                        {user.isActive ? "Active" : "Inactive"}
-                      </span>
-                      {getStatusBadge(user.isActive ? "active" : "inactive")}
-                    </div>
-                  </div>
+        <div className="flex flex-col gap-4">
+          {users.map((user) => (
+            <div
+              key={user._id}
+              className="bg-white rounded-xl shadow-md p-5 border border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center hover:shadow-lg transition-all"
+            >
+              <div>
+                <div className="text-lg font-semibold text-darkgrey">
+                  {user.firstName} {user.lastName}
                 </div>
-              ))}
+                <div className="text-secondary text-opacity-70 text-sm mt-1">
+                  {user.email}
+                  {user.phone && (
+                    <>
+                      <span className="mx-2">•</span>
+                      {user.phone}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 mt-4 sm:mt-0">
+                {getStatusBadge(user.isActive ? "active" : "inactive")}
+                <span
+                  className={`text-sm font-medium ${
+                    user.isActive ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {user.isActive ? "Active" : "Inactive"}
+                </span>
+              </div>
             </div>
-          )}
+          ))}
         </div>
       )}
     </div>

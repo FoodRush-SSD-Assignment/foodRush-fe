@@ -66,7 +66,6 @@ const LoginForm = () => {
       // Store token and user data
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("pendingRole", role);
 
       showSuccess("Logged in!", "Welcome to FoodRush");
 
