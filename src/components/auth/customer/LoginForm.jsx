@@ -1,37 +1,84 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import logo2 from "../../../assets/logo2.png";
 import GoogleLogo from "../../../assets/GoogleLogo.webp";
 import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
 import authApi from "../../../api/authAPI";
-
+import { showSuccess, showError } from "../../../utils/alertService";
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
-  // const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
+  };
+
+  const validate = () => {
+    let tempErrors = { email: "", password: "" };
+    let isValid = true;
+
+    if (!form.email) {
+      tempErrors.email = "Email is required";
+      isValid = false;
+    }
+
+    if (!form.password) {
+      tempErrors.password = "Password is required";
+      isValid = false;
+    }
+
+    setErrors(tempErrors);
+    return isValid;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check validation before proceeding
+    if (!validate()) {
+      return;
+    }
+
     try {
       // Call your actual backend API
       const res = await authApi.post(`/auth/login`, form);
 
       const { token, user } = res.data;
 
+      // Check if the user role is 'customer'
+      if (user.role !== "customer") {
+        showError(
+          "Login failed",
+          "This email is not registered as a customer."
+        );
+        return; // Stop here, don't continue to login
+      }
+
       // Store token and user data
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("pendingRole", role);
+
+      showSuccess("Logged in!", "Welcome to FoodRush");
 
       // Redirect to landing page
-      navigate("/landing-page", { replace: true });
+      setTimeout(() => {
+        navigate("/landing-page", { replace: true });
+      }, 1000);
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      showError(
+        "Login failed",
+        err.response?.data?.message || "An error occurred"
+      );
     }
   };
 
@@ -47,13 +94,13 @@ const LoginForm = () => {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-center mb-6">Welcome back</h2>
+      <h2 className="text-2xl font-bold text-center mb-0">Welcome back</h2>
       <p className="text-gray-500 text-center mb-8">
         Please enter your details to sign in
       </p>
 
       {/* Social login options */}
-      <div className="flex justify-center gap-6 mb-8">
+      {/* <div className="flex justify-center gap-6 mb-8">
         {[GoogleLogo, FacebookLogo, AppleLogo].map((logo, i) => (
           <button
             key={i}
@@ -62,18 +109,18 @@ const LoginForm = () => {
             <img src={logo} alt="logo" className="w-6 h-6 object-contain" />
           </button>
         ))}
-      </div>
+      </div> */}
 
-      <div className="relative mb-6">
+      {/* <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-gray-200"></div>
         </div>
         <div className="relative flex justify-center text-sm">
           <span className="px-2 bg-white text-gray-500">or</span>
         </div>
-      </div>
+      </div> */}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <div>
           <label
             htmlFor="email"
@@ -85,11 +132,18 @@ const LoginForm = () => {
             id="email"
             name="email"
             type="email"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+              errors.email
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-red-500"
+            }`}
             placeholder="Enter your email"
             onChange={handleChange}
+            value={form.email}
           />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          )}
         </div>
 
         <div>
@@ -104,10 +158,14 @@ const LoginForm = () => {
               id="password"
               name="password"
               type="password"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
+                errors.password
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-red-500"
+              }`}
               placeholder="••••••••"
               onChange={handleChange}
+              value={form.password}
             />
             <button
               type="button"
@@ -133,6 +191,9 @@ const LoginForm = () => {
               </svg>
             </button>
           </div>
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+          )}
         </div>
 
         <div className="flex items-center justify-between">
@@ -160,7 +221,7 @@ const LoginForm = () => {
       </form>
 
       <p className="mt-6 text-center text-sm text-gray-500">
-        Don’t have an account?{" "}
+        Don't have an account?{" "}
         <a
           href="/register"
           className="text-purple-600 hover:underline font-medium"
@@ -173,7 +234,7 @@ const LoginForm = () => {
           href="/merchant-login"
           className="text-purple-900 hover:underline font-medium"
         >
-          Merhant Login
+          Merchant Login
         </a>
       </p>
     </div>

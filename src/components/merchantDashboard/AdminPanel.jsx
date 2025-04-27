@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authApi from "../../api/authAPI";
+import axios from "axios"; // Add axios for fetching restaurants
+import restaurantApi from "../../api/restaurantAPI";
 
 const AdminPanel = () => {
   const [userCounts, setUserCounts] = useState({
@@ -9,38 +11,49 @@ const AdminPanel = () => {
     deliveryPerson: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [restaurants, setRestaurants] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUsersAndRestaurants = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await authApi.get(`/auth/getusers`, {
+
+        // Fetch users
+        const usersRes = await authApi.get(`/auth/getusers`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const users = res.data.users || res.data;
-        const counts = {
-          customer: 0,
-          restaurantOwner: 0,
-          deliveryPerson: 0,
-        };
+        const users = usersRes.data.users || usersRes.data;
+        const counts = { customer: 0, restaurantOwner: 0, deliveryPerson: 0 };
 
         users.forEach((user) => {
           if (counts[user.role] !== undefined) {
             counts[user.role]++;
           }
         });
-
         setUserCounts(counts);
+
+        // Fetch restaurants
+        const restaurantsRes = await restaurantApi.get(`/restaurants/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const restaurants = restaurantsRes.data;
+        // sort newest first
+        restaurants.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setRestaurants(restaurants); // You should add setRestaurants state
       } catch (err) {
-        console.error("Failed to fetch users", err);
+        console.error("Failed to fetch data", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUsers();
+    fetchUsersAndRestaurants();
   }, []);
 
   const handleRoleCardClick = (role) => {
@@ -71,16 +84,10 @@ const AdminPanel = () => {
     },
   ];
 
-  const newRestaurants = [
-    { id: 1, name: "MasterChef", type: "Fast Food", status: "needs-reviewing" },
-    { id: 2, name: "MasterChef", type: "Fast Food", status: "approved" },
-    { id: 3, name: "MasterChef", type: "Fast Food", status: "rejected" },
-  ];
-
-  // Helper function to render status badge
+  // Helper functions
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "needs-reviewing":
+    switch (status.toLowerCase()) {
+      case "pending":
         return (
           <span className="inline-block w-3 h-3 bg-blue-500 rounded-full"></span>
         );
@@ -88,7 +95,7 @@ const AdminPanel = () => {
         return (
           <span className="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
         );
-      case "rejected":
+      case "suspended":
         return (
           <span className="inline-block w-3 h-3 bg-primary rounded-full"></span>
         );
@@ -97,15 +104,14 @@ const AdminPanel = () => {
     }
   };
 
-  // Helper function to render status text
   const getStatusText = (status) => {
-    switch (status) {
-      case "needs-reviewing":
-        return "Needs Reviewing";
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "Pending";
       case "approved":
         return "Approved";
-      case "rejected":
-        return "Rejected";
+      case "suspended":
+        return "Suspended";
       default:
         return "";
     }
@@ -115,24 +121,34 @@ const AdminPanel = () => {
     <div className="pt-4 min-h-screen">
       {/* Active Users */}
       <div className="mb-10">
-        <h3 className="text-secondary font-medium mb-3">Active Users</h3>
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-secondary font-medium mb-3">Active Users</h3>
+
+          <a
+            href="/admin/users"
+            className="text-primary text-sm hover:text-blue-500 transition-all"
+          >
+            See All
+          </a>
+        </div>
+
         <div className="flex gap-4">
           <div
-            className="bg-primary text-white px-6 py-4 rounded shadow-sm w-1/3 cursor-pointer hover:opacity-90 transition-opacity"
+            className="bg-primary text-white px-6 py-4 rounded shadow-sm w-1/3 cursor-pointer hover:opacity-90 transition-all hover:scale-105 transform"
             onClick={() => handleRoleCardClick("customer")}
           >
             <p className="text-sm">Customers</p>
             <p className="text-2xl font-bold">{userCounts.customer}</p>
           </div>
           <div
-            className="bg-primary text-white px-6 py-4 rounded shadow-sm w-1/3 cursor-pointer hover:opacity-90 transition-opacity"
+            className="bg-primary text-white px-6 py-4 rounded shadow-sm w-1/3 cursor-pointer hover:opacity-90 transition-all hover:scale-105 transform"
             onClick={() => handleRoleCardClick("restaurantOwner")}
           >
             <p className="text-sm">Restaurant Owners</p>
             <p className="text-2xl font-bold">{userCounts.restaurantOwner}</p>
           </div>
           <div
-            className="bg-primary text-white px-6 py-4 rounded shadow-sm w-1/3 cursor-pointer hover:opacity-90 transition-opacity"
+            className="bg-primary text-white px-6 py-4 rounded shadow-sm w-1/3 cursor-pointer hover:opacity-90 transition-all hover:scale-105 transform"
             onClick={() => handleRoleCardClick("deliveryPerson")}
           >
             <p className="text-sm">Drivers</p>
@@ -147,13 +163,19 @@ const AdminPanel = () => {
           <h3 className="text-secondary font-medium">
             Recent Driver Registrations
           </h3>
-          <a href="#" className="text-primary text-sm">
+          <a
+            href="#"
+            className="text-primary text-sm hover:text-blue-500 transition-all"
+          >
             See All
           </a>
         </div>
         <div className="bg-lightgray rounded border-darkgrey border-[1px]">
           {driverRegistrations.map((driver) => (
-            <div key={driver.id} className="border-b last:border-b-0 p-3">
+            <div
+              key={driver.id}
+              className="border-b last:border-b-0 p-3 hover:bg-gray-100 transition-all"
+            >
               <div className="flex justify-between items-center">
                 <div>
                   <div className="font-medium">{driver.name}</div>
@@ -164,19 +186,9 @@ const AdminPanel = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {driver.status === "needs-reviewing" ? (
-                    <span className="text-secondary">Needs Reviewing</span>
-                  ) : (
-                    <span
-                      className={
-                        driver.status === "approved"
-                          ? "text-secondary"
-                          : "text-secondary"
-                      }
-                    >
-                      {getStatusText(driver.status)}
-                    </span>
-                  )}
+                  <span className="text-secondary">
+                    {getStatusText(driver.status)}
+                  </span>
                   {getStatusBadge(driver.status)}
                 </div>
               </div>
@@ -189,23 +201,27 @@ const AdminPanel = () => {
       <div>
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-secondary font-medium">New Restaurants</h3>
-          <a href="#" className="text-primary text-sm">
+          <a
+            href="#"
+            className="text-primary text-sm hover:text-blue-500 transition-all"
+          >
             See All
           </a>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          {newRestaurants.map((restaurant) => (
+          {restaurants.map((restaurant) => (
             <div
-              key={restaurant.id}
-              className="bg-white rounded shadow-sm overflow-hidden"
+              key={restaurant._id}
+              className="bg-white rounded shadow-sm overflow-hidden hover:scale-105 transform hover:shadow-xl transition-all"
+              onClick={() => navigate(`/admin/restaurant/${restaurant._id}`)}
             >
               <div className="h-32 bg-gray-300 relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-medium text-white">
-                    {restaurant.name}
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span className="text-lg font-bold text-white">
+                    {restaurant.restaurantName}
                   </span>
-                  <div className="text-center text-white">
-                    {restaurant.type}
+                  <div className="text-sm text-white capitalize">
+                    {restaurant.category.replace("_", " ")}
                   </div>
                 </div>
               </div>

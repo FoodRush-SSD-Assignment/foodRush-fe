@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import authApi from "../../api/authAPI";
 
 const UserRolePage = () => {
@@ -68,12 +68,18 @@ const UserRolePage = () => {
   };
 
   return (
-    <div className="pt-4 min-h-screen">
+    <div className="pt-4 px-8 min-h-screen">
       {/* Header with back button */}
-      <div className="flex items-center mb-6">
-        <Link to="/dashboard" className="mr-4 text-primary hover:underline">
-          &larr; Back to Dashboard
-        </Link>
+
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 text-primary hover:text-secondary transition-all"
+      >
+        &larr; Back
+      </button>
+      <div>
+        {" "}
         <h2 className="text-xl font-semibold text-secondary">
           {formatRoleName(role)}
         </h2>
