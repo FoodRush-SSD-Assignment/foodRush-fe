@@ -35,6 +35,8 @@ import UserProfile from "./components/UserProfile";
 import CartPage from "./pages/order/CartPage";
 import CheckoutPage from "./pages/order/CheckoutPage";
 import SuccessPage from "./pages/order/SuccessPage";
+import MyOrdersPage from "./pages/order/MyOrdersPage";
+import OrderHistoryPage from "./pages/order/OrderHistoryPage";
 
 const App = () => {
   return (
@@ -71,6 +73,8 @@ const App = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout/:orderId" element={<CheckoutPage />} />
           <Route path="/success" element={<SuccessPage />} />
+          <Route path="/myorders" element={<MyOrdersPage />} />
+          <Route path="/order-history" element={<OrderHistoryPage />} />
         </Route>
       </Routes>
     </Router>
