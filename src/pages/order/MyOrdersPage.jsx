@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import orderApi from "../../api/orderApi";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import StatusBadge from "../../components/order/StatusBadge";
+import Modal from "../../components/order/Modal";
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -61,6 +62,24 @@ const MyOrdersPage = () => {
       console.error("Error toggling order visibility:", err.message);
     }
   };
+
+  const cancelOrderByCustomer = async (orderId) => {
+    try {
+      const response = await orderApi.patch(
+        `/order-service/order/cancel/${orderId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      window.alert("Order cancelled successfully.");
+      fetchOrders(); // Refresh the orders after cancelling
+      console.log(response.data.message);
+    } catch (error) {
+      console.error("Error cancelling order:", error.response?.data?.message || error.message);
+      window.alert(error.response?.data?.message || "Failed to cancel order.");
+    }
+  };  
 
   return (
     <div>
@@ -123,7 +142,25 @@ const MyOrdersPage = () => {
                       <StatusBadge status={order.status} />
                     </div>
 
-                    <div className="flex items-center gap-60">
+                    <div className="flex items-center gap-40">
+                      {/* Cancel Order Button */}
+                      <button
+                        className={`px-4 py-2 rounded ${
+                          order.status === "pending" || order.status === "confirmed"
+                            ? "bg-red-500 text-white hover:bg-red-600"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
+                        disabled={!(order.status === "pending" || order.status === "confirmed")}
+                        onClick={(e) => {
+                          e.stopPropagation(); // To prevent opening order details
+                          if (order.status === "pending" || order.status === "confirmed") {
+                            cancelOrderByCustomer(order.orderId);
+                          }
+                        }}
+                      >
+                        Cancel Order
+                      </button>
+
                       {/* Price */}
                       <div className="flex flex-col items-end">
                         <p className="text-lg font-bold">
@@ -263,10 +300,7 @@ const MyOrdersPage = () => {
               <div className="flex-1">
                 <h3 className="mt-4 font-semibold">Delivery Address</h3>
                 <p>
-                  {selectedOrder.deliveryAddress.street},{" "}
-                  {selectedOrder.deliveryAddress.city},{" "}
-                  {selectedOrder.deliveryAddress.province}{" "}
-                  {selectedOrder.deliveryAddress.postalCode}
+                  {selectedOrder.deliveryAddress}
                 </p>
 
                 <h3 className="mt-4 font-semibold">Payments</h3>
