@@ -1,45 +1,47 @@
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
+import { showError } from "../utils/alertService";
 
 // Load Stripe outside the component to avoid reloading on every render
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-const StripeCheckoutButton = () => {
-  const cartItems = [
-    {
-      name: "Burger",
-      price: 10,
-      quantity: 2,
-    },
-    {
-      name: "Fries",
-      price: 5,
-      quantity: 1,
-    },
-  ];
-
+const StripeCheckoutButton = ({
+  cartItems,
+  totalAmount,
+  handlePlaceOrderBeforeStripe,
+}) => {
   const handleClick = async () => {
     try {
+      const orderId = await handlePlaceOrderBeforeStripe(); // ✅ First place the order
+
+      if (!orderId) {
+        showError("Failed to create order. Try again.");
+        return;
+      }
+
+      // Store the orderId temporarily
+      localStorage.setItem("latestOrderId", orderId);
+
       const stripe = await stripePromise;
 
       const response = await axios.post(
         `${
           import.meta.env.VITE_ORDER_SERVICE_URL
         }/order-service/stripe/create-checkout-session`,
-        { items: cartItems }
+        { items: cartItems, orderId: orderId }
       );
 
       const sessionId = response?.data?.id;
 
       if (!sessionId) {
-        alert("Unable to create a Stripe session. Try again.");
+        showError("Unable to create Stripe session. Try again.");
         return;
       }
 
       await stripe.redirectToCheckout({ sessionId });
     } catch (error) {
       console.error("Stripe Checkout error:", error);
-      alert("An error occurred during checkout. Please try again.");
+      showError("An error occurred during checkout. Please try again.");
     }
   };
 

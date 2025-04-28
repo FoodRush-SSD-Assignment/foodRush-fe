@@ -58,7 +58,10 @@ const CustomerNavbar = () => {
           <span>My Cart</span>
         </button>
 
-        <button className="flex items-center space-x-2 hover:text-lightgray">
+        <button
+          className="flex items-center space-x-2 hover:text-lightgray"
+          onClick={() => navigate("/myaccount")}
+        >
           <FaUser className="h-5 w-5" />
           <span>My Account</span>
         </button>

@@ -5,6 +5,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import CartItem from "../../components/order/CartItem";
 import orderApi from "../../api/orderApi";
 import CheckoutDetailsForm from "../../components/order/CheckoutDetailsForm";
+import { showError } from "../../utils/alertService";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -13,13 +14,11 @@ const CartPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     contactNumber: "",
-    street: "",
-    city: "",
-    province: "",
-    postalCode: "",
+    deliveryAddress: "",
     paymentMethod: "card",
   });
   const navigate = useNavigate();
+  const [cartId, setCartId] = useState("");
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -31,6 +30,7 @@ const CartPage = () => {
         });
         setCartItems(res.data.items || []);
         setRestaurantName(res.data.restaurantName || "");
+        setCartId(res.data._id || "");
         setFormData((prev) => ({
           ...prev,
           name: `${res.data.customerName || ""}`,
@@ -65,12 +65,7 @@ const CartPage = () => {
   const handlePlaceOrder = async () => {
     try {
       const orderData = {
-        deliveryAddress: {
-          street: formData.street,
-          city: formData.city,
-          postalCode: formData.postalCode,
-          province: formData.province,
-        },
+        deliveryAddress: formData.deliveryAddress,
         paymentMethod: formData.paymentMethod,
         customerMobileNo: formData.contactNumber,
       };
@@ -84,11 +79,11 @@ const CartPage = () => {
       );
 
       const createdOrderId = res.data.order.orderId;
-      alert("Order placed successfully!");
+      showSuccess("Order placed successfully!");
       navigate(`/checkout/${createdOrderId}`);
     } catch (err) {
       console.error("Failed to place order:", err);
-      alert("Failed to place order. Try again.");
+      showError("Failed to place order. Try again.");
     }
   };
 
@@ -142,11 +137,20 @@ const CartPage = () => {
               </div>
             </div>
 
-            <CheckoutDetailsForm
+            <div className="items-end">
+              <button
+                onClick={() => navigate(`/checkout/${cartId}`)}
+                className="bg-primary  text-white px-6 py-2 rounded-md"
+              >
+                Checkout
+              </button>
+            </div>
+
+            {/* <CheckoutDetailsForm
               formData={formData}
               handleChange={handleChange}
               handlePlaceOrder={handlePlaceOrder}
-            />
+            /> */}
           </>
         )}
       </div>

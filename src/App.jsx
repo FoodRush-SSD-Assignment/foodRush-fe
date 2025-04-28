@@ -27,10 +27,14 @@ import EditRestaurant from "./components/admin/EditRestaurant";
 import AllRestaurants from "./components/admin/AllRestaurants";
 import AllUsers from "./components/admin/AllUsers";
 import UserPage from "./components/admin/UserPage";
+import AllDrivers from "./components/admin/AllDrivers";
+import ViewDriver from "./components/admin/ViewDriver";
+import UserProfile from "./components/UserProfile";
 
 //order services
 import CartPage from "./pages/order/CartPage";
 import CheckoutPage from "./pages/order/CheckoutPage";
+import SuccessPage from "./pages/order/SuccessPage";
 
 const App = () => {
   return (
@@ -54,6 +58,9 @@ const App = () => {
           <Route path="/admin/users" element={<AllUsers />} />
           <Route path="/stripe-checkout" element={<StripeCheckoutButton />} />
           <Route path="/admin/user/:id" element={<UserPage />} />
+          <Route path="/admin/alldrivers" element={<AllDrivers />} />
+          <Route path="/view-driver/:driverId" element={<ViewDriver />} />
+          <Route path="/myaccount" element={<UserProfile />} />
 
           <Route path="/admin/restaurant/:id" element={<RestaurantDetails />} />
           <Route path="/admin/restaurants" element={<AllRestaurants />} />
@@ -63,6 +70,7 @@ const App = () => {
           />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout/:orderId" element={<CheckoutPage />} />
+          <Route path="/success" element={<SuccessPage />} />
         </Route>
       </Routes>
     </Router>

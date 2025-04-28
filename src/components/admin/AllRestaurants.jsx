@@ -94,15 +94,17 @@ const AllRestaurants = () => {
 
   return (
     <div className="px-8 pt-4 min-h-screen">
-      <h3 className="text-secondary text-xl mb-4">All Restaurants</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="text-secondary text-xl mb-4">All Restaurants</h3>
 
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-4 text-primary hover:text-secondary transition-all"
-      >
-        &larr; Back
-      </button>
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-4 text-primary hover:text-secondary transition-all"
+        >
+          &larr; Back
+        </button>
+      </div>
 
       {/* Filters */}
       <div className="flex gap-4 mb-6">
