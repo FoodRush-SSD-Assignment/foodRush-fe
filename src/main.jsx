@@ -6,7 +6,7 @@ import "./index.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider> {/* 👉 wrap App inside AuthProvider */}
+    <AuthProvider> 
       <App />
     </AuthProvider>
   </StrictMode>

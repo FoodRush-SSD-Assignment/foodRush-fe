@@ -18,6 +18,10 @@ import VerifyEmailForm from "./components/MailVerify";
 //restaurant services
 import CategoryPage from "../src/pages/restaurant/CategoryPage";
 import RestaurantDetailPage from "../src/pages/restaurant/RestaurantDetail";
+import ReadyOrders from "./pages/delivery-services/ReadyOrders";
+import Maplocation from "./pages/delivery-services/Maplocation";
+import OrderStatus from "./pages/delivery-services/OrderStatus";
+
 
 function App() {
   return (
@@ -34,6 +38,10 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmailForm />} />
         <Route path="/category/:type" element={<CategoryPage />} />
         <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
+        <Route path="/readyorders" element={<ReadyOrders />} />
+        <Route path="/maplocation" element={<Maplocation />} />
+        <Route path="/orderstatus" element={<OrderStatus />} />
+   
       </Routes>
     </Router>
   );
