@@ -34,10 +34,14 @@ import ViewMenu from './pages/restOwner/ViewMenu';
 import ViewOrders from "./pages/restOwner/ViewOrders";
 import AddRestaurantForm from "./components/restOwner/AddRestaurent";
 
+import AllDrivers from "./components/admin/AllDrivers";
+import ViewDriver from "./components/admin/ViewDriver";
+import UserProfile from "./components/UserProfile";
 
 //order services
 import CartPage from "./pages/order/CartPage";
 import CheckoutPage from "./pages/order/CheckoutPage";
+import SuccessPage from "./pages/order/SuccessPage";
 
 const App = () => {
   return (
@@ -61,6 +65,9 @@ const App = () => {
           <Route path="/admin/users" element={<AllUsers />} />
           <Route path="/stripe-checkout" element={<StripeCheckoutButton />} />
           <Route path="/admin/user/:id" element={<UserPage />} />
+          <Route path="/admin/alldrivers" element={<AllDrivers />} />
+          <Route path="/view-driver/:driverId" element={<ViewDriver />} />
+          <Route path="/myaccount" element={<UserProfile />} />
 
           <Route path="/admin/restaurant/:id" element={<RestaurantDetails />} />
           <Route path="/admin/restaurants" element={<AllRestaurants />} />
@@ -78,6 +85,7 @@ const App = () => {
           <Route path="/merchant/restaurants/:id/additem" element={<AddItemForm />} />
           <Route path="/viewOrders/restaurant/:restaurantId" element={<ViewOrders />} />
 
+          <Route path="/success" element={<SuccessPage />} />
         </Route>
       </Routes>
     </Router>

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import authApi from "../../api/authAPI";
 import axios from "axios"; // Add axios for fetching restaurants
 import restaurantApi from "../../api/restaurantAPI";
+import deliveryApi from "../../api/deliveryAPI";
+import { FaCar, FaMotorcycle } from "react-icons/fa";
 
 const AdminPanel = () => {
   const [userCounts, setUserCounts] = useState({
@@ -12,6 +14,7 @@ const AdminPanel = () => {
   });
   const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState([]);
+  const [drivers, setDrivers] = useState([]); // State for storing drivers
 
   const navigate = useNavigate();
 
@@ -36,16 +39,26 @@ const AdminPanel = () => {
         setUserCounts(counts);
 
         // Fetch restaurants
-        const restaurantsRes = await restaurantApi.get(`/restaurants/`, {
+        const restaurantsRes = await restaurantApi.get(`/restaurants`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         const restaurants = restaurantsRes.data;
-        // sort newest first
         restaurants.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
-        setRestaurants(restaurants); // You should add setRestaurants state
+        setRestaurants(restaurants);
+
+        // Fetch drivers
+        const driversRes = await deliveryApi.get(
+          `/delivery-drivers/admin/drivers`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const latestDrivers =
+          driversRes.data.drivers || driversRes.data.slice(0, 5);
+        setDrivers(latestDrivers);
       } catch (err) {
         console.error("Failed to fetch data", err);
       } finally {
@@ -60,29 +73,17 @@ const AdminPanel = () => {
     navigate(`/admin/users/${role}`);
   };
 
-  const driverRegistrations = [
-    {
-      id: 1,
-      name: "Nimal Perera",
-      email: "nimalperera@gmail.com",
-      date: "2023-03-15",
-      status: "needs-reviewing",
-    },
-    {
-      id: 2,
-      name: "Nimal Perera",
-      email: "nimalperera@gmail.com",
-      date: "2023-03-15",
-      status: "approved",
-    },
-    {
-      id: 3,
-      name: "Nimal Perera",
-      email: "nimalperera@gmail.com",
-      date: "2023-03-15",
-      status: "rejected",
-    },
-  ];
+  // Helper function to render vehicle type icons
+  const getVehicleIcon = (vehicle) => {
+    switch (vehicle.toLowerCase()) {
+      case "car":
+        return <FaCar />;
+      case "bike":
+        return <FaMotorcycle />;
+      default:
+        return null;
+    }
+  };
 
   // Helper functions
   const getStatusBadge = (status) => {
@@ -114,6 +115,23 @@ const AdminPanel = () => {
         return "Suspended";
       default:
         return "";
+    }
+  };
+
+  const getDriverStatusBadge = (status) => {
+    switch (status.toLowerCase()) {
+      case "active":
+        return (
+          <span className="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
+        );
+      case "inactive":
+        return (
+          <span className="inline-block w-3 h-3 bg-red-500 rounded-full"></span>
+        );
+      default:
+        return (
+          <span className="inline-block w-3 h-3 bg-gray-500 rounded-full"></span>
+        );
     }
   };
 
@@ -164,39 +182,43 @@ const AdminPanel = () => {
             Recent Driver Registrations
           </h3>
           <a
-            href="#"
+            href="admin/alldrivers"
             className="text-primary text-sm hover:text-blue-500 transition-all"
           >
             See All
           </a>
         </div>
-        <div className="bg-lightgray rounded border-darkgrey border-[1px]">
-          {driverRegistrations.map((driver) => (
+        <div className="grid grid-cols-1 gap-3">
+          {drivers.map((driver) => (
             <div
-              key={driver.id}
-              className="border-b last:border-b-0 p-3 hover:bg-gray-100 transition-all"
+              key={driver._id}
+              className="bg-lightgray rounded border-darkgrey border p-4
+    hover:bg-gray-100 hover:shadow-md hover:scale-[1.01] 
+    transition-all duration-200 cursor-pointer"
             >
               <div className="flex justify-between items-center">
                 <div>
-                  <div className="font-medium">{driver.name}</div>
-                  <div className="text-secondary text-opacity-50 text-sm flex gap-1">
+                  <div className="font-medium">{driver.driverName}</div>
+                  <div className="text-secondary text-opacity-50 text-sm flex gap-2 items-center">
                     <span>{driver.email}</span>
                     <span>•</span>
-                    <span>{driver.date}</span>
+                    <div className="flex items-center gap-1">
+                      <span>{driver.status}</span>
+                      {getDriverStatusBadge(driver.status)}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-secondary">
-                    {getStatusText(driver.status)}
+                  <span className="text-primary text-sm flex items-center font-medium">
+                    {getVehicleIcon(driver.vehicle)}
+                    <span className="ml-1">{driver.vehicleNumber}</span>
                   </span>
-                  {getStatusBadge(driver.status)}
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-
       {/* New Restaurants */}
       <div>
         <div className="flex justify-between items-center mb-2">

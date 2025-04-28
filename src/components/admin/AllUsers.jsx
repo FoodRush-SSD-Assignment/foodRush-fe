@@ -70,11 +70,17 @@ const AllUsers = () => {
   });
 
   return (
-    <div className="px-8 pt-2 min-h-screen bg-white">
+    <div className="px-8 pt-2 pb-12 min-h-screen bg-white">
       {/* User Filters */}
       <div className="mb-0 pt-1">
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-secondary font-medium text-lg">Filter Users</h3>
+          <button
+            onClick={() => navigate(-1)}
+            className="mb-4 text-primary hover:text-secondary transition-all"
+          >
+            &larr; Back
+          </button>
         </div>
 
         <div className="grid grid-cols-3 gap-2 mb-2">
