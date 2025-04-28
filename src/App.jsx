@@ -27,6 +27,13 @@ import UserPage from "./components/admin/UserPage";
 
 //rest owner services
 import OwnerWorkPage from '../src/pages/restaurant/OwnerWorkPage';
+import ViewRestaurants from './components/restOwner/ViewRestaurants';
+import ViewRestDetails from './components/restOwner/ViewRestDetails';
+import AddItemForm from "./components/restOwner/AddItemForm";
+import ViewMenu from './pages/restOwner/ViewMenu';
+import ViewOrders from "./pages/restOwner/ViewOrders";
+import AddRestaurantForm from "./components/restOwner/AddRestaurent";
+
 
 //order services
 import CartPage from "./pages/order/CartPage";
@@ -64,7 +71,12 @@ const App = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout/:orderId" element={<CheckoutPage />} />
 
-          <Route path="/OwnerWorkPage/:id" element={<OwnerWorkPage />} />
+          <Route path="/merchant/view-my-restaurants" element={<ViewRestaurants />} />
+          <Route path="/merchant/add-restaurant/:id" element={<AddRestaurantForm />} />
+          <Route path="/merchant/restaurant-details/:id" element={<ViewRestDetails />} />
+          <Route path="/merchant/restaurants/:id/menu" element={<ViewMenu />} />
+          <Route path="/merchant/restaurants/:id/additem" element={<AddItemForm />} />
+          <Route path="/viewOrders/restaurant/:restaurantId" element={<ViewOrders />} />
 
         </Route>
       </Routes>

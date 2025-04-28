@@ -1,7 +1,7 @@
 // src/pages/RestaurantDetailPage.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import restaurantApi from "../../api/restaurantAPI";
+import restaurantApi from "../../api/restaurantApi"
 import ItemCategorySection from "../../components/restaurant/ItemCategorySection"; // ← Updated import
 
 const RestaurantDetailPage = () => {

@@ -83,7 +83,7 @@ const MerchantNavbar = () => {
           <>
             <button
               className="flex items-center text-md group transition-colors duration-200"
-              onClick={() => navigate("/merchant/myrestaurant")}
+              onClick={() => navigate(`/merchant/view-my-restaurants`)}
             >
               <span className="mr-2 group-hover:text-darkgrey">
                 My Restaurant

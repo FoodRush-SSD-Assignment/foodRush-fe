@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import restaurantApi from '../../api/restaurantApi'; // Your custom axios instance
+import restaurantApi from '../../api/restaurantAPI';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const AddRestaurantForm = () => {
-  const { id } = useParams(); // Fetch the 'id' from the URL
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     restaurantName: '',
-    ownerId: '', // Initially empty, will be set from the route or localStorage
+    ownerId: id,
     location: '',
     contactNumber: '',
     category: '',
   });
 
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('success'); // 'success' or 'error'
   const categories = [
     'fast_food',
     'traditional',
@@ -26,10 +28,10 @@ const AddRestaurantForm = () => {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user')); // Parse the user object
 
-    if (user && user._id) {
+    if (user && user.id) {
       setFormData((prev) => ({
         ...prev,
-        ownerId: user._id, // Set ownerId from the user data in localStorage
+        ownerId: user.id, // Set ownerId from the user data in localStorage
       }));
     }
 
@@ -69,11 +71,12 @@ const AddRestaurantForm = () => {
 
       console.log('Response:', res.data);
       setMessage('Restaurant added successfully!');
+      setMessageType('success');
 
       // Clear form
       setFormData({
         restaurantName: '',
-        ownerId: '', // Don't clear ownerId, it will stay as the logged-in user's ID
+        ownerId: formData.ownerId, // Keep ownerId, it will stay as the logged-in user's ID
         location: '',
         contactNumber: '',
         category: '',
@@ -81,6 +84,7 @@ const AddRestaurantForm = () => {
 
     } catch (error) {
       console.error('Error adding restaurant:', error);
+      setMessageType('error');
 
       if (error.response) {
         console.error('Error response data:', error.response.data);
@@ -96,83 +100,99 @@ const AddRestaurantForm = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Add New Restaurant</h2>
+    <div className="max-w-xl mx-auto p-8 bg-white rounded-lg shadow-md my-8">
+      <div className="flex items-center mb-6">
+        <button 
+          onClick={() => navigate(-1)}
+          className="mr-3 text-secondary hover:text-primary transition-all"
+        >
+          &larr;
+        </button>
+        <h2 className="text-2xl font-bold text-secondary">Add New Restaurant</h2>
+      </div>
 
-      {message && <p className="mb-4 text-center text-green-600">{message}</p>}
+      {message && (
+        <div className={`mb-6 p-4 rounded-md ${
+          messageType === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+        }`}>
+          {message}
+        </div>
+      )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Owner ID field is hidden from the user but still in the form data */}
+        <input
+          type="hidden"
+          name="ownerId"
+          value={formData.ownerId}
+        />
+
         <div>
-          <label className="block mb-1 font-medium">Restaurant Name</label>
+          <label className="block mb-2 font-medium text-secondary">Restaurant Name</label>
           <input
             type="text"
             name="restaurantName"
             value={formData.restaurantName}
             onChange={handleChange}
+            placeholder="Enter your restaurant name"
             required
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border border-darkgrey px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-lightgray"
           />
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Owner ID</label>
-          <input
-            type="text"
-            name="ownerId"
-            value={formData.ownerId}
-            readOnly  // Making the field read-only
-            className="w-full border px-3 py-2 rounded-md"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">Location</label>
+          <label className="block mb-2 font-medium text-secondary">Location</label>
           <input
             type="text"
             name="location"
             value={formData.location}
             onChange={handleChange}
+            placeholder="Enter restaurant address"
             required
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border border-darkgrey px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-lightgray"
           />
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Contact Number</label>
+          <label className="block mb-2 font-medium text-secondary">Contact Number</label>
           <input
             type="text"
             name="contactNumber"
             value={formData.contactNumber}
             onChange={handleChange}
+            placeholder="Enter contact phone number"
             required
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border border-darkgrey px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-lightgray"
           />
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Category</label>
+          <label className="block mb-2 font-medium text-secondary">Restaurant Category</label>
           <select
             name="category"
             value={formData.category}
             onChange={handleChange}
             required
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border border-darkgrey px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-lightgray appearance-none"
+            style={{ backgroundImage: "url('data:image/svg+xml;charset=US-ASCII,<svg width=\"20\" height=\"20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\" fill=\"%23331C1C\"/></svg>')", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
           >
-            <option value="">Select a category</option>
+            <option value="" disabled>Select a category</option>
             {categories.map((cat) => (
               <option key={cat} value={cat}>
-                {cat.replace('_', ' ').toUpperCase()}
+                {cat.replace('_', ' ').charAt(0).toUpperCase() + cat.replace('_', ' ').slice(1).toLowerCase()}
               </option>
             ))}
           </select>
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-        >
-          Add Restaurant
-        </button>
+        <div className="pt-4">
+          <button
+            type="submit"
+            className="w-full bg-primary text-white py-3 px-6 rounded-md hover:bg-opacity-90 transition-all font-medium text-lg shadow-sm"
+          >
+            Add Restaurant
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react'
-import AddRestaurantForm from '../../components/restaurant/AddRestaurent';
+import AddRestaurantForm from '../../components/restOwner/AddRestaurent';
 const OwnerWorkPage = () => {
   return (
     <div>OwnerWorkPage
