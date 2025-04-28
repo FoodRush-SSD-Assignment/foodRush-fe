@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import {
   FaSignOutAlt,
   FaUsers,
-  FaBuilding,
+  FaUtensils,
   FaUserCircle,
   FaTruck,
+  FaTable,
 } from "react-icons/fa";
 import { showConfirmation, showLoading } from "../../utils/alertService";
 import Swal from "sweetalert2";
@@ -55,6 +56,13 @@ const MerchantNavbar = () => {
       </div>
 
       <div className="flex items-center space-x-6">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="flex items-center text-md group transition-colors duration-200"
+        >
+          <span className="mr-2 group-hover:text-darkgrey">Dashboard</span>
+          <FaTable size={18} className="group-hover:text-darkgrey" />
+        </button>
         {/* Admin view */}
         {user.role === "admin" && (
           <>
@@ -73,7 +81,7 @@ const MerchantNavbar = () => {
               <span className="mr-2 group-hover:text-darkgrey">
                 Restaurants
               </span>
-              <FaBuilding size={20} className="group-hover:text-darkgrey" />
+              <FaUtensils size={16} className="group-hover:text-darkgrey" />
             </button>
           </>
         )}
@@ -111,7 +119,7 @@ const MerchantNavbar = () => {
         {/* Common button for all roles */}
         <button
           className="flex items-center text-md group transition-colors duration-200"
-          onClick={() => navigate("/merchant/account")}
+          onClick={() => navigate("/myaccount")}
         >
           <span className="mr-2 group-hover:text-darkgrey">My Account</span>
           <FaUserCircle size={20} className="group-hover:text-darkgrey" />
