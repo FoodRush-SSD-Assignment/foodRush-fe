@@ -164,7 +164,7 @@ const MyOrdersPage = () => {
                       {/* Price */}
                       <div className="flex flex-col items-end">
                         <p className="text-lg font-bold">
-                          Rs. {order.totalPrice.toFixed(2)}
+                          Rs. {order.totalAmount ? order.totalAmount.toFixed(2) : "N/A"}
                         </p>
                       </div>
 
@@ -246,9 +246,9 @@ const MyOrdersPage = () => {
                     <div className="flex items-center gap-60">
                       {/* Price */}
                       <div className="flex flex-col items-end">
-                        <p className="text-lg font-bold">
-                          Rs. {order.totalPrice.toFixed(2)}
-                        </p>
+                      <p className="text-lg font-bold">
+                        Rs. {order.totalAmount ? order.totalAmount.toFixed(2) : "N/A"}
+                      </p>
                       </div>
 
                       {/* Toggle Button */}
@@ -284,7 +284,7 @@ const MyOrdersPage = () => {
                 <br />
                 <p><strong>Status -</strong> <StatusBadge status={selectedOrder.status} /></p>
                 <br />
-                <p><strong>Total Price -</strong> Rs. {selectedOrder.totalPrice.toFixed(2)}</p>
+                <p><strong>Total Price -</strong> Rs. {selectedOrder.totalAmount.toFixed(2)}</p>
 
                 <h3 className="mt-4 font-semibold">Items</h3>
                 <ul className="list-disc ml-6">

@@ -1,7 +1,7 @@
 // src/components/restaurant/MenuItemCard.jsx
 import React from "react";
 import orderApi from "../../api/orderApi";
-import { showError } from "../../utils/alertService";
+import { showError, showSuccess } from "../../utils/alertService";
 
 const ItemCard = ({ item }) => {
   const handleAddToCart = async () => {

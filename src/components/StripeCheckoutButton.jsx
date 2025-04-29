@@ -7,12 +7,13 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const StripeCheckoutButton = ({
   cartItems,
-  totalAmount,
+  taxAmount,
+  deliveryFee,
   handlePlaceOrderBeforeStripe,
 }) => {
   const handleClick = async () => {
     try {
-      const orderId = await handlePlaceOrderBeforeStripe(); // ✅ First place the order
+      const orderId = await handlePlaceOrderBeforeStripe();
 
       if (!orderId) {
         showError("Failed to create order. Try again.");
@@ -25,10 +26,13 @@ const StripeCheckoutButton = ({
       const stripe = await stripePromise;
 
       const response = await axios.post(
-        `${
-          import.meta.env.VITE_ORDER_SERVICE_URL
-        }/order-service/stripe/create-checkout-session`,
-        { items: cartItems, orderId: orderId }
+        `${import.meta.env.VITE_ORDER_SERVICE_URL}/order-service/stripe/create-checkout-session`,
+        { 
+          items: cartItems, 
+          orderId: orderId, 
+          taxAmount: taxAmount, 
+          deliveryFee: deliveryFee 
+        }
       );
 
       const sessionId = response?.data?.id;
