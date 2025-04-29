@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import orderApi from "../../api/orderApi";
 import { FaCheckCircle } from "react-icons/fa";
-const SuccessPage = () => {
+
+const StripeSuccessPage = () => {
   const { orderId: orderIdFromParams } = useParams();
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true); // add loading state
@@ -31,7 +32,9 @@ const SuccessPage = () => {
         await orderApi.patch(
           `/order-service/order/${orderId}/pay`,
           {
+            paymentStatus: "paid",
             status: "confirmed",
+            paymentCompletedAt: new Date(),
           },
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -46,7 +49,6 @@ const SuccessPage = () => {
           }
         );
         setOrderDetails(res.data);
-        console.log(res.data);
 
         if (!orderIdFromParams) {
           localStorage.removeItem("latestOrderId");
@@ -74,7 +76,9 @@ const SuccessPage = () => {
     return <div className="p-6">No order details found.</div>;
   }
 
-  const formattedDate = new Date(orderDetails.createdAt).toLocaleDateString();
+  const formattedDate = orderDetails?.createdAt
+    ? new Date(orderDetails.createdAt).toLocaleString()
+    : "";
 
   return (
     <div className="pt-4 pb-12 min-h-screen bg-white">
@@ -186,4 +190,4 @@ const SuccessPage = () => {
   );
 };
 
-export default SuccessPage;
+export default StripeSuccessPage;
