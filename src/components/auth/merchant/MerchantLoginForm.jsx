@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo2 from "../../../assets/logo2.png";
-import authApi from "../../../api/authAPI";
+import authApi from "../../../api/authApi.js";
 import { showSuccess, showError } from "../../../utils/alertService";
 
 const MerchantLoginForm = () => {

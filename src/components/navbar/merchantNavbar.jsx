@@ -7,6 +7,7 @@ import {
   FaUserCircle,
   FaTruck,
   FaTable,
+  FaBuilding,
 } from "react-icons/fa";
 import { showConfirmation, showLoading } from "../../utils/alertService";
 import Swal from "sweetalert2";
@@ -119,7 +120,7 @@ const MerchantNavbar = () => {
         {/* Common button for all roles */}
         <button
           className="flex items-center text-md group transition-colors duration-200"
-          onClick={() => navigate("/myaccount")}
+          onClick={() => navigate("/merchant-account")}
         >
           <span className="mr-2 group-hover:text-darkgrey">My Account</span>
           <FaUserCircle size={20} className="group-hover:text-darkgrey" />

@@ -5,7 +5,7 @@ import orderApi from "../../api/orderApi";
 import OrderSummary from "../../components/order/OrderSummary";
 import OrderDetailConfirm from "../../components/order/OrderDetailConfirm";
 import CheckoutDetailsForm from "../../components/order/CheckoutDetailsForm";
-import authApi from "../../api/authAPI";
+import authApi from "../../api/authApi.js";
 import StripeCheckoutButton from "../../components/StripeCheckoutButton";
 import { showSuccess, showError } from "../../utils/alertService";
 

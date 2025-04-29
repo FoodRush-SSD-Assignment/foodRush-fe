@@ -3,17 +3,18 @@ import { useParams, useNavigate } from "react-router-dom";
 import deliveryApi from "../../api/deliveryAPI";
 import { FaCar, FaMotorcycle, FaPhone, FaEnvelope } from "react-icons/fa";
 import { showSuccess, showError } from "../../utils/alertService";
+
 const ViewDriver = () => {
   const { driverId } = useParams();
   const navigate = useNavigate();
   const [driver, setDriver] = useState(null);
   const [loading, setLoading] = useState(true);
   const [newStatus, setNewStatus] = useState("");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchDriver = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await deliveryApi.get(
           `/delivery-drivers/${driverId}`,
           {
@@ -37,7 +38,7 @@ const ViewDriver = () => {
     try {
       const token = localStorage.getItem("token");
       await deliveryApi.put(
-        `/delivery-drivers/admin/driver/${driverId}/update-status`,
+        `/delivery-drivers/approve/${driverId}`,
         { approvalStatus: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -80,12 +81,22 @@ const ViewDriver = () => {
 
   return (
     <div className="px-8 py-6 min-h-screen bg-white">
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-6 text-primary hover:text-secondary transition-all"
-      >
-        &larr; Back
-      </button>
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h1 className="text-xl font-bold">
+            <span>Driver Profile</span>
+          </h1>
+        </div>
+
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-4 text-primary hover:text-secondary transition-all"
+        >
+          &larr; Back
+        </button>
+      </div>
+      <hr className="mb-6 rounded-md" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Driver Info */}
@@ -134,30 +145,32 @@ const ViewDriver = () => {
           </div>
 
           {/* Update Status */}
-          <div className="mt-8">
-            <label
-              htmlFor="status"
-              className="block mb-2 text-secondary font-medium"
-            >
-              Update Approval Status
-            </label>
-            <select
-              id="status"
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
-            >
-              <option value="approved">Approved</option>
-              <option value="pending">Pending</option>
-              <option value="suspended">Suspended</option>
-            </select>
-            <button
-              onClick={handleStatusUpdate}
-              className="mt-4 bg-primary text-white px-4 py-2 rounded-md hover:bg-secondary transition-all"
-            >
-              Update Status
-            </button>
-          </div>
+          {newStatus && (
+            <div className="mt-8">
+              <label
+                htmlFor="status"
+                className="block mb-2 text-secondary font-medium"
+              >
+                Update Approval Status
+              </label>
+              <select
+                id="status"
+                value={newStatus}
+                onChange={(e) => setNewStatus(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
+              >
+                <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
+                <option value="suspended">Suspended</option>
+              </select>
+              <button
+                onClick={handleStatusUpdate}
+                className="mt-4 bg-primary text-white px-4 py-2 rounded-md hover:bg-secondary transition-all"
+              >
+                Update Status
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import GoogleLogo from "../../../assets/GoogleLogo.webp";
 import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
 import { useNavigate } from "react-router-dom";
-import authApi from "../../../api/authAPI";
+import authApi from "../../../api/authApi.js";
 import { showSuccess, showError } from "../../../utils/alertService";
 
 const RegistrationForm = () => {

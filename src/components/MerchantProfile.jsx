@@ -1,47 +1,58 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import authApi from "../../api/authApi.js";
-import { showSuccess, showError } from "../../utils/alertService.js";
-const UserPage = () => {
-  const { id } = useParams(); // Get user id from URL
-  const [user, setUser] = useState(null);
+import { useNavigate } from "react-router-dom";
+import authApi from "../api/authApi.js";
+import userAvatar from "../assets/userAvatar.png";
+import { showSuccess, showError } from "../utils/alertService.js";
+
+const MerchantProfile = () => {
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserData = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token"); // Get token from localStorage
-        const response = await authApi.get(`/auth/getuser/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const token = localStorage.getItem("token");
+        const userString = localStorage.getItem("user");
+        const user = userString ? JSON.parse(userString) : null;
+        const userID = user?.id;
+
+        if (!userID) {
+          console.error("User ID not found.");
+          setError("User ID not found. Please login again.");
+          setLoading(false);
+          return;
+        }
+
+        const res = await authApi.get(`/auth/getuser/${userID}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setUser(response.data);
-        setEditedUser(response.data);
+
+        setUserData(res.data);
+        setEditedUser(res.data);
         setError(null);
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error("Failed to fetch user data", error);
         setError("Failed to load user details. Please try again.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
-  }, [id]);
+    fetchUserData();
+  }, []);
 
   const handleEditToggle = () => {
     if (isEditing) {
       // Cancel editing, reset to original values
-      setEditedUser(user);
+      setEditedUser(userData);
     }
     setIsEditing(!isEditing);
   };
@@ -55,28 +66,49 @@ const UserPage = () => {
     try {
       setIsSaving(true);
       const token = localStorage.getItem("token");
-      await authApi.put(`/auth/update/${id}`, editedUser, {
+      const userID = userData.id;
+
+      await authApi.put(`/auth/update/${userID}`, editedUser, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUser(editedUser);
-      showSuccess("User data updated successfully");
+
+      setUserData(editedUser);
+      showSuccess("Profile updated successfully");
       setIsEditing(false);
       setError(null);
+
+      // Update localStorage with new user data if needed
+      const userString = localStorage.getItem("user");
+      if (userString) {
+        const user = JSON.parse(userString);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            firstname: editedUser.firstname,
+            lastname: editedUser.lastname,
+            email: editedUser.email,
+          })
+        );
+      }
     } catch (error) {
       console.error("Failed to update user:", error);
-      setError("Failed to update user. Please try again.");
+      setError("Failed to update profile. Please try again.");
+      showError("Failed to update profile");
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeactivate = async () => {
     try {
       const token = localStorage.getItem("token");
+      const userID = userData.id;
 
-      // Validate password with the server (create a /verify-password endpoint or use your login API for validation)
+      // Verify password first (if your API requires it)
+      // This is optional based on your authentication flow
       const verifyResponse = await authApi.post(
         "/auth/verify-password",
         { password },
@@ -84,54 +116,58 @@ const UserPage = () => {
       );
 
       if (verifyResponse.data.valid) {
-        // If password matches, proceed to delete
-        await authApi.delete(`/auth/delete/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // Call deactivate endpoint instead of delete
+        await authApi.put(
+          `/auth/deactivate/`,
+          {}, // Empty body
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        showSuccess("User deleted successfully!");
-        navigate("/admin/users"); // Redirect after deletion
+        showSuccess("Account deactivated successfully!");
+
+        // Clear local storage and redirect to login
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
       } else {
         showError("Incorrect password. Please try again.");
       }
     } catch (err) {
       console.error(err);
-      showError(err.response?.data?.message || "Failed to delete User.");
+      showError(err.response?.data?.message || "Failed to deactivate account.");
     } finally {
-      setShowDeleteModal(false); // Close the modal
+      setShowDeactivateModal(false); // Close the modal
     }
   };
 
-  // Format the role name for better display
-  const formatRoleName = (role) => {
-    if (!role) return "";
-    return role
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase())
-      .replace("restaurant Owner", "Restaurant Owner")
-      .replace("delivery Person", "Delivery Person");
+  // Format the date of birth
+  const formatDate = (dateString) => {
+    if (!dateString) return "Not provided";
+    try {
+      return new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch (error) {
+      return dateString;
+    }
   };
 
   // Get user initials for the avatar
   const getUserInitials = () => {
-    if (!user) return "";
-    const firstInitial = user.firstname ? user.firstname[0].toUpperCase() : "";
-    const lastInitial = user.lastname ? user.lastname[0].toUpperCase() : "";
+    if (!userData) return "";
+    const firstInitial = userData.firstname
+      ? userData.firstname[0].toUpperCase()
+      : "";
+    const lastInitial = userData.lastname
+      ? userData.lastname[0].toUpperCase()
+      : "";
     return `${firstInitial}${lastInitial}`;
-  };
-
-  // Get color class based on the user role
-  const getRoleColorClass = (role) => {
-    switch (role) {
-      case "customer":
-        return "bg-blue-100 text-blue-800";
-      case "restaurantOwner":
-        return "bg-green-100 text-green-800";
-      case "deliveryPerson":
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
   };
 
   if (loading) {
@@ -159,22 +195,22 @@ const UserPage = () => {
     );
   }
 
-  if (!user) {
+  if (!userData) {
     return (
       <div className="min-h-screen bg-gray-50 px-8 py-12">
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
           <h3 className="text-gray-700 text-lg font-medium mb-2">
-            User Not Found
+            Profile Not Found
           </h3>
           <p className="text-gray-600">
-            The requested user could not be found or you may not have permission
-            to view this user.
+            Your profile information could not be loaded. Please try logging in
+            again.
           </p>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/login")}
             className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-red-900 transition-colors"
           >
-            Go Back
+            Go to Login
           </button>
         </div>
       </div>
@@ -183,13 +219,13 @@ const UserPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-8 py-6">
-      {/* Back button */}
+      {/* Header with back button */}
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-secondary">User Profile</h2>
+        <h2 className="text-2xl font-bold text-secondary">My Profile</h2>
 
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 text-primary hover:text-secondary transition-all flex items-center"
+          className="text-primary hover:text-secondary transition-all flex items-center"
         >
           <svg
             className="w-5 h-5 mr-1"
@@ -205,7 +241,7 @@ const UserPage = () => {
               d="M10 19l-7-7m0 0l7-7m-7 7h18"
             />
           </svg>
-          Back to Users
+          Back
         </button>
       </div>
       <hr className="mb-6 rounded-md" />
@@ -214,18 +250,22 @@ const UserPage = () => {
         {/* User Summary Card */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="bg-primary text-white p-6 flex flex-col items-center">
-            <div className="w-24 h-24 rounded-full bg-white text-primary flex items-center justify-center text-3xl font-bold mb-4">
-              {getUserInitials()}
-            </div>
+            {userData.profileImage ? (
+              <img
+                src={userData.profileImage}
+                alt="Profile"
+                className="w-24 h-24 rounded-full object-cover border-4 border-white mb-4"
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-white text-primary flex items-center justify-center text-3xl font-bold mb-4">
+                {getUserInitials()}
+              </div>
+            )}
             <h3 className="text-xl font-semibold">
-              {user.firstname} {user.lastname}
+              {userData.firstname} {userData.lastname}
             </h3>
-            <span
-              className={`mt-2 px-3 py-1 rounded-full text-sm font-medium ${getRoleColorClass(
-                user.role
-              )}`}
-            >
-              {formatRoleName(user.role)}
+            <span className="mt-2 px-3 py-1 rounded-full text-sm font-medium bg-white text-primary">
+              Merchant Account
             </span>
           </div>
 
@@ -246,10 +286,10 @@ const UserPage = () => {
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   ></path>
                 </svg>
-                <span className="text-gray-700">{user.email}</span>
+                <span className="text-gray-700">{userData.email}</span>
               </div>
 
-              {user.mobileno && (
+              {userData.mobileno && (
                 <div className="flex items-center">
                   <svg
                     className="w-5 h-5 text-gray-500 mr-3"
@@ -265,7 +305,7 @@ const UserPage = () => {
                       d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                     ></path>
                   </svg>
-                  <span className="text-gray-700">{user.mobileno}</span>
+                  <span className="text-gray-700">{userData.mobileno}</span>
                 </div>
               )}
 
@@ -286,11 +326,9 @@ const UserPage = () => {
                 </svg>
                 <span className="text-gray-700">
                   Joined{" "}
-                  {new Date(user.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {userData.createdAt
+                    ? formatDate(userData.createdAt)
+                    : "Recently"}
                 </span>
               </div>
 
@@ -310,7 +348,7 @@ const UserPage = () => {
                   ></path>
                 </svg>
                 <span className="text-gray-700">
-                  {user.isVerified ? (
+                  {userData.isVerified ? (
                     <span className="text-green-600">Verified Account</span>
                   ) : (
                     <span className="text-red-500">Unverified Account</span>
@@ -342,7 +380,7 @@ const UserPage = () => {
                 />
               ) : (
                 <p className="text-gray-800">
-                  {user.firstname || "Not provided"}
+                  {userData.firstname || "Not provided"}
                 </p>
               )}
             </div>
@@ -361,7 +399,7 @@ const UserPage = () => {
                 />
               ) : (
                 <p className="text-gray-800">
-                  {user.lastname || "Not provided"}
+                  {userData.lastname || "Not provided"}
                 </p>
               )}
             </div>
@@ -379,7 +417,9 @@ const UserPage = () => {
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               ) : (
-                <p className="text-gray-800">{user.email || "Not provided"}</p>
+                <p className="text-gray-800">
+                  {userData.email || "Not provided"}
+                </p>
               )}
             </div>
 
@@ -397,7 +437,7 @@ const UserPage = () => {
                 />
               ) : (
                 <p className="text-gray-800">
-                  {user.mobileno || "Not provided"}
+                  {userData.mobileno || "Not provided"}
                 </p>
               )}
             </div>
@@ -415,7 +455,9 @@ const UserPage = () => {
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               ) : (
-                <p className="text-gray-800">{user.nic || "Not provided"}</p>
+                <p className="text-gray-800">
+                  {userData.nic || "Not provided"}
+                </p>
               )}
             </div>
 
@@ -439,32 +481,9 @@ const UserPage = () => {
                 />
               ) : (
                 <p className="text-gray-800">
-                  {user.dateofbirth
-                    ? new Date(user.dateofbirth).toLocaleDateString()
+                  {userData.dateofbirth
+                    ? formatDate(userData.dateofbirth)
                     : "Not provided"}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Role
-              </label>
-              {isEditing ? (
-                <select
-                  name="role"
-                  value={editedUser.role || ""}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="customer">Customer</option>
-                  <option value="restaurantOwner">Restaurant Owner</option>
-                  <option value="deliveryPerson">Delivery Person</option>
-                  <option value="admin">Admin</option>
-                </select>
-              ) : (
-                <p className="text-gray-800">
-                  {formatRoleName(user.role) || "Not assigned"}
                 </p>
               )}
             </div>
@@ -483,64 +502,63 @@ const UserPage = () => {
                 />
               ) : (
                 <p className="text-gray-800">
-                  {user.address || "Not provided"}
+                  {userData.address || "Not provided"}
                 </p>
               )}
             </div>
           </div>
-          <div className="mb-6 flex justify-between items-center">
-            <div className="mt-4">
-              <button
-                onClick={handleEditToggle}
-                className={`px-4 py-2 rounded-md flex items-center ${
-                  isEditing
-                    ? "bg-gray-500 hover:bg-gray-600"
-                    : "bg-primary hover:bg-red-900"
-                } text-white transition-colors`}
-                disabled={isSaving}
-              >
-                {isEditing ? (
-                  <>
-                    <svg
-                      className="w-5 h-5 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                    Cancel
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="w-5 h-5 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                      />
-                    </svg>
-                    Edit Profile
-                  </>
-                )}
-              </button>
-            </div>
+
+          <div className="mt-8 flex flex-wrap justify-between items-center">
+            <button
+              onClick={handleEditToggle}
+              className={`px-4 py-2 rounded-md flex items-center ${
+                isEditing
+                  ? "bg-gray-500 hover:bg-gray-600"
+                  : "bg-primary hover:bg-red-900"
+              } text-white transition-colors mb-4 sm:mb-0`}
+              disabled={isSaving}
+            >
+              {isEditing ? (
+                <>
+                  <svg
+                    className="w-5 h-5 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  Cancel
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-5 h-5 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                    />
+                  </svg>
+                  Edit Profile
+                </>
+              )}
+            </button>
 
             {isEditing && (
-              <div className="mt-8 flex justify-end">
+              <div className="flex flex-wrap gap-3">
                 <button
                   onClick={handleSaveChanges}
                   className="px-6 py-2 bg-primary text-white rounded-md hover:bg-red-900 transition-colors flex items-center"
@@ -592,23 +610,44 @@ const UserPage = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowDeleteModal(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white font-semibold mx-2 py-2 px-4 rounded transition-all"
+                  onClick={() => setShowDeactivateModal(true)}
+                  className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
                 >
-                  Delete User
+                  <svg
+                    className="w-5 h-5 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Deactivate Account
                 </button>
               </div>
             )}
           </div>
         </div>
       </div>
-      {showDeleteModal && (
+
+      {/* Deactivate Account Modal */}
+      {showDeactivateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 w-80">
-            <h3 className="text-lg font-semibold mb-4">Confirm Deletion</h3>
+            <h3 className="text-lg font-semibold mb-4">Confirm Deactivation</h3>
 
             <p className="text-sm mb-4 text-gray-600">
-              Please enter your password to confirm deleting the User.
+              Are you sure you want to deactivate your account? This action will
+              hide your profile but your data will be preserved.
+            </p>
+
+            <p className="text-sm mb-4 text-gray-600">
+              Please enter your password to confirm:
             </p>
 
             <input
@@ -621,16 +660,16 @@ const UserPage = () => {
 
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => setShowDeleteModal(false)}
+                onClick={() => setShowDeactivateModal(false)}
                 className="px-4 py-2 rounded bg-gray-300 text-gray-700"
               >
                 Cancel
               </button>
               <button
-                onClick={handleDelete}
+                onClick={handleDeactivate}
                 className="px-4 py-2 rounded bg-red-600 text-white"
               >
-                Confirm Delete
+                Confirm Deactivate
               </button>
             </div>
           </div>
@@ -640,4 +679,4 @@ const UserPage = () => {
   );
 };
 
-export default UserPage;
+export default MerchantProfile;

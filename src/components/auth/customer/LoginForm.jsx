@@ -4,7 +4,7 @@ import logo2 from "../../../assets/logo2.png";
 import GoogleLogo from "../../../assets/GoogleLogo.webp";
 import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
-import authApi from "../../../api/authAPI";
+import authApi from "../../../api/authApi.js";
 import { showSuccess, showError } from "../../../utils/alertService";
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });

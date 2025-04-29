@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import authApi from "../api/authAPI";
+import authApi from "../api/authApi.js";
 import userAvatar from "../assets/userAvatar.png";
 
 const UserProfile = () => {
