@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowDownCircle, Check, X, Package, User, Store, ShoppingCart, CreditCard, Truck, Calendar } from 'lucide-react';
 import orderApi from '../../api/orderApi';
+import restaurantApi from '../../api/restaurantApi';
 
 function OrderCard({ order }) {
   const [status, setStatus] = useState(order?.status || 'pending');
@@ -41,8 +42,8 @@ function OrderCard({ order }) {
   
         if (newStatus.includes("cancelled")) {
           try {
-            const emailResponse = await orderApi.post(
-              `/order-service/order/send-order-cancellation-email`,
+            const emailResponse = await restaurantApi.post(
+              `/restaurants/send-order-cancellation-email`,
               {
                 email: order.email, 
                 orderId: order.orderId,
