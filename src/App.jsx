@@ -35,6 +35,7 @@ import UserProfile from "./components/UserProfile";
 import CartPage from "./pages/order/CartPage";
 import CheckoutPage from "./pages/order/CheckoutPage";
 import SuccessPage from "./pages/order/SuccessPage";
+import StripeSuccessPage from "./pages/order/StripeSuccessPage";
 
 const App = () => {
   return (
@@ -70,7 +71,8 @@ const App = () => {
           />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout/:orderId" element={<CheckoutPage />} />
-          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/success/:orderId" element={<SuccessPage />} />
+          <Route path="/stripe-success" element={<StripeSuccessPage />} />
         </Route>
       </Routes>
     </Router>
