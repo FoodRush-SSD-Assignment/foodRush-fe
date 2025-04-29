@@ -1,39 +1,75 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import logo2 from "../../../assets/logo2.png";
-import GoogleLogo from "../../../assets/GoogleLogo.webp";
-import FacebookLogo from "../../../assets/FacebookLogo.webp";
-import AppleLogo from "../../../assets/AppleLogo.svg";
 import authApi from "../../../api/authAPI";
-import { useContext } from "react"; 
-import { AuthContext } from "../../../context/AuthContext"; // adjust the path if needed
-
+import { showSuccess, showError } from "../../../utils/alertService";
 
 const MerchantLoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
 
-  // const baseURL = import.meta.env.VITE_API_BASE_URL;
-
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    // Clear error when user starts typing
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: "" });
+    }
+  };
+
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = { email: "", password: "" };
+
+    // Check email
+    if (!form.email.trim()) {
+      newErrors.email = "Email is required";
+      valid = false;
+    }
+
+    // Check password
+    if (!form.password) {
+      newErrors.password = "Password is required";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
-      const result = await login(form.email, form.password); // <-- use context login function
-  
-      if (result.success) {
-        navigate("/dashboard", { replace: true });
-      } else {
-        alert(result.message);
+      const res = await authApi.post(`/auth/login`, form);
+      const { token, user } = res.data;
+
+      if (user.role === "customer") {
+        showError(
+          "Access Denied",
+          "You are already registered as a customer. Please login through the customer portal."
+        );
+        return; // Stop further execution
       }
+
+      showSuccess("Logged in!", "Welcome to FoodRush");
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 1000);
     } catch (err) {
-      console.error(err);
-      alert("Something went wrong. Please try again.");
+      showError(
+        "Login failed",
+        err.response?.data?.message || "An error occurred"
+      );
     }
   };
   
@@ -55,28 +91,7 @@ const MerchantLoginForm = () => {
         Please enter your details to sign in
       </p>
 
-      {/* Social login options */}
-      {/* <div className="flex justify-center gap-6 mb-8">
-        {[GoogleLogo, FacebookLogo, AppleLogo].map((logo, i) => (
-          <button
-            key={i}
-            className="p-2 rounded-full border border-gray-200 hover:bg-gray-50 bg-white"
-          >
-            <img src={logo} alt="logo" className="w-6 h-6 object-contain" />
-          </button>
-        ))}
-      </div> */}
-      {/* 
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200"></div>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">or</span>
-        </div>
-      </div> */}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <div>
           <label
             htmlFor="email"
@@ -88,11 +103,18 @@ const MerchantLoginForm = () => {
             id="email"
             name="email"
             type="email"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+              errors.email
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-red-500"
+            } bg-white`}
             placeholder="Enter your email"
             onChange={handleChange}
+            value={form.email}
           />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          )}
         </div>
 
         <div>
@@ -107,10 +129,14 @@ const MerchantLoginForm = () => {
               id="password"
               name="password"
               type="password"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                errors.password
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-red-500"
+              } bg-white`}
               placeholder="••••••••"
               onChange={handleChange}
+              value={form.password}
             />
             <button
               type="button"
@@ -136,6 +162,9 @@ const MerchantLoginForm = () => {
               </svg>
             </button>
           </div>
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+          )}
         </div>
 
         <div className="flex items-center justify-between">
