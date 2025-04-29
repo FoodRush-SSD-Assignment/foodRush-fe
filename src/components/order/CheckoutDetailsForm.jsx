@@ -1,6 +1,11 @@
 import { FaEdit } from "react-icons/fa";
 
-const CheckoutDetailsForm = ({ formData, handleChange, totalAmount }) => {
+const CheckoutDetailsForm = ({
+  formData,
+  handleChange,
+  totalAmount,
+  handleEditClick,
+}) => {
   // Check if cash is allowed based on total amount
   const isCashDisabled = totalAmount > 3000;
 
@@ -8,6 +13,13 @@ const CheckoutDetailsForm = ({ formData, handleChange, totalAmount }) => {
     <div className="border rounded-lg p-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold mb-7">Delivery Details</h2>
+        <button
+          onClick={handleEditClick}
+          className="text-primary flex items-center"
+        >
+          <FaEdit className="mr-1" />
+          <span>Edit</span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 gap-2">
