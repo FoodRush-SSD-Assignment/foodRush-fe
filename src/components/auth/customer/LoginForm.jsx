@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo2 from "../../../assets/logo2.png";
+import { AuthContext } from "../../../context/AuthContext"; 
 import GoogleLogo from "../../../assets/GoogleLogo.webp";
 import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
 import authApi from "../../../api/authAPI";
+
 import { showSuccess, showError } from "../../../utils/alertService";
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

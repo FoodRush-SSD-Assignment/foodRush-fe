@@ -35,7 +35,11 @@ import UserProfile from "./components/UserProfile";
 import CartPage from "./pages/order/CartPage";
 import CheckoutPage from "./pages/order/CheckoutPage";
 import SuccessPage from "./pages/order/SuccessPage";
+// delivery services
 import StripeSuccessPage from "./pages/order/StripeSuccessPage";
+import ReadyOrders from "./pages/delivery-services/ReadyOrders";
+import Maplocation from "./pages/delivery-services/Maplocation";
+import OrderStatus from "./pages/delivery-services/OrderStatus";
 
 const App = () => {
   return (
@@ -73,7 +77,13 @@ const App = () => {
           <Route path="/checkout/:orderId" element={<CheckoutPage />} />
           <Route path="/success/:orderId" element={<SuccessPage />} />
           <Route path="/stripe-success" element={<StripeSuccessPage />} />
+          
+          <Route path="/readyorders" element={<ReadyOrders />} />
+          <Route path="/maplocation" element={<Maplocation />} />
+          <Route path="/orderstatus" element={<OrderStatus />} />
         </Route>
+
+   
       </Routes>
     </Router>
   );
