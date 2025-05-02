@@ -1,15 +1,25 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext"; 
+import { useEffect  ,useState} from "react";
+
 import AdminPanel from "../components/merchantDashboard/AdminPanel";
 import RestaurantManagement from "../components/merchantDashboard/RestaurantManagement";
 import DeliveryTasks from "../components/merchantDashboard/DeliveryTasks";
 
 const Dashboard = () => {
-  const { user, loading } = useContext(AuthContext); // 👉 get user and loading from AuthContext
 
-  if (loading) return <div className="p-8">Loading...</div>; // Show loading state
+  const [user, setUser] = useState(null);
 
-  if (!user) return <div className="p-8">Not authorized</div>; // Handle unauthorized access
+  useEffect(() => {
+  
+    const tokenData = localStorage.getItem("user");
+    if (tokenData) {
+      const parsed = JSON.parse(tokenData);
+      setUser(parsed);
+    }
+  }, []);
+
+  if (!user) return <div className="p-8">Loading...</div>;
+
+  
 
   return (
     <>

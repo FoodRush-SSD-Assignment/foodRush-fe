@@ -143,7 +143,7 @@ const OrderStatus = () => {
 
   return (
     <>
-    <MerchantNavbar/>
+   
 
     <div className="max-w-lg mx-auto p-3">
       <h1 className="text-xl font-bold text-gray-800 mb-4 text-center">Order Status</h1>

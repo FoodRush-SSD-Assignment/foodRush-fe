@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext';
-import deliveryApi from '../../api/deliveryApi';
+import React, { useEffect, useState } from 'react';
+import deliveryApi from '../../api/deliveryAPI';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -44,7 +43,10 @@ const ChangeView = ({ bounds }) => {
 };
 
 const MapLocation = () => {
-  const { user, token } = useContext(AuthContext);
+  // Get user and token from localStorage instead of AuthContext
+  const [userData, setUserData] = useState(null);
+  const [token, setToken] = useState(null);
+ 
   const navigate = useNavigate();
   const [driver, setDriver] = useState(null);
   const [restaurantLocation, setRestaurantLocation] = useState(null);
@@ -59,6 +61,26 @@ const MapLocation = () => {
   });
   const [loading, setLoading] = useState(true);
   const [bounds, setBounds] = useState([]);
+
+  // Load user data and token from localStorage on component mount
+  useEffect(() => {
+    try {
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+      
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUserData(JSON.parse(storedUser));
+      } else {
+        displayError('general', 'User not authenticated. Please login again.');
+        // Optional: Redirect to login page
+        // navigate('/login');
+      }
+    } catch (error) {
+      displayError('general', 'Error loading authentication data');
+      console.error('Error loading auth data from localStorage:', error);
+    }
+  }, []);
 
   // Display error toast/notification
   const displayError = (type, message) => {
@@ -78,14 +100,14 @@ const MapLocation = () => {
 
   // Fetch driver details from the backend
   const fetchDriverDetails = async () => {
-    if (!user || !token) {
+    if (!userData || !token) {
       displayError('driver', 'User not authenticated');
       setLoading(false);
       return;
     }
 
     try {
-      const { data } = await deliveryApi.get(`/delivery-drivers/${user.id}`, {
+      const { data } = await deliveryApi.get(`/delivery-drivers/${userData.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -148,6 +170,9 @@ const MapLocation = () => {
   };
 
   useEffect(() => {
+    // Only proceed with fetching data if we have userData and token
+    if (!userData || !token) return;
+    
     // Get current order from localStorage
     const orderData = localStorage.getItem('currentOrder');
     if (!orderData) {
@@ -208,7 +233,7 @@ const MapLocation = () => {
       setLoading(false);
       console.error('Error parsing order data:', err);
     }
-  }, [user, token]);
+  }, [userData, token]); // Dependency on userData and token
 
   // Update bounds when driver location changes
   useEffect(() => {
@@ -237,7 +262,7 @@ const MapLocation = () => {
 
   return (
     <>
-      <MerchantNavbar/>
+ 
       <div className="p-4 md:p-6 flex flex-col items-center space-y-6 min-h-screen bg-gray-50">
         <div className="w-full max-w-6xl">
           <div className="flex justify-between items-center mb-6">
@@ -402,7 +427,7 @@ const MapLocation = () => {
                         <Popup>
                           <div className="text-center">
                             <h3 className="font-semibold">Your Location</h3>
-                            <p className="text-sm text-gray-600">Driver: {driver.name || user?.name || "You"}</p>
+                            <p className="text-sm text-gray-600">Driver: {driver.name || userData?.firstname || "You"}</p>
                           </div>
                         </Popup>
                       </Marker>

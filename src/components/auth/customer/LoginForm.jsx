@@ -6,14 +6,14 @@ import GoogleLogo from "../../../assets/GoogleLogo.webp";
 import FacebookLogo from "../../../assets/FacebookLogo.webp";
 import AppleLogo from "../../../assets/AppleLogo.svg";
 import authApi from "../../../api/authAPI";
-import { useContext } from "react"; 
+
 import { showSuccess, showError } from "../../../utils/alertService";
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

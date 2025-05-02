@@ -122,7 +122,7 @@ const ReadyOrders = () => {
 
   return (
     <>
-    <MerchantNavbar/>
+    
     <div className="max-w-6xl mx-auto px-4 py-8 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Ready Orders</h1>
