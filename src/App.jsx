@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import {BrowserRouter as Router,Routes,Route,Navigate,} from "react-router-dom";
 
 // Layout
 import AppLayout from "./layouts/AppLayout";
@@ -12,6 +7,8 @@ import AppLayout from "./layouts/AppLayout";
 // Pages
 import Dashboard from "./pages/Dashboard";
 import LandingPage from "./pages/LandingPage";
+
+//auth services
 import LoginPage from "./pages/auth/customer/LoginPage";
 import RegisterPage from "./pages/auth/customer/RegisterPage";
 import MerchantLoginPage from "./pages/auth/merchant/MerchantLoginPage";
@@ -27,6 +24,16 @@ import EditRestaurant from "./components/admin/EditRestaurant";
 import AllRestaurants from "./components/admin/AllRestaurants";
 import AllUsers from "./components/admin/AllUsers";
 import UserPage from "./components/admin/UserPage";
+
+//restaurant services
+import OwnerWorkPage from '../src/pages/restaurant/OwnerWorkPage';
+import ViewRestaurants from './components/restOwner/ViewRestaurants';
+import ViewRestDetails from './components/restOwner/ViewRestDetails';
+import AddItemForm from "./components/restOwner/AddItemForm";
+import ViewMenu from './pages/restOwner/ViewMenu';
+import ViewOrders from "./pages/restOwner/ViewOrders";
+import AddRestaurantForm from "./components/restOwner/AddRestaurent";
+
 import AllDrivers from "./components/admin/AllDrivers";
 import ViewDriver from "./components/admin/ViewDriver";
 import UserProfile from "./components/UserProfile";
@@ -75,6 +82,14 @@ const App = () => {
           />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout/:orderId" element={<CheckoutPage />} />
+
+          <Route path="/merchant/view-my-restaurants" element={<ViewRestaurants />} />
+          <Route path="/merchant/add-restaurant/:id" element={<AddRestaurantForm />} />
+          <Route path="/merchant/restaurant-details/:id" element={<ViewRestDetails />} />
+          <Route path="/merchant/restaurants/:id/menu" element={<ViewMenu />} />
+          <Route path="/merchant/restaurants/:id/additem" element={<AddItemForm />} />
+          <Route path="/viewOrders/restaurant/:restaurantId" element={<ViewOrders />} />
+
           <Route path="/success/:orderId" element={<SuccessPage />} />
           <Route path="/stripe-success" element={<StripeSuccessPage />} />
           

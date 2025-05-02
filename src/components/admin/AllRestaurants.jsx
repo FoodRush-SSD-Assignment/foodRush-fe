@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import restaurantApi from "../../api/restaurantAPI";
+import restaurantApi from "../../api/restaurantApi";
 
 const AllRestaurants = () => {
   const [restaurants, setRestaurants] = useState([]);

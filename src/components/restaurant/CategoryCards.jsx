@@ -1,17 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-//images
-import fastFoodImg from '../../assets/restaurant_assets/fast_food.jpg'
-import traditionalImg from '../../assets/restaurant_assets/traditional.jpg';
-import asianImg from '../../assets/restaurant_assets/asian.jpg';
-import westernImg from '../../assets/restaurant_assets/western.jpg';
-import healthyImg from '../../assets/restaurant_assets/healthy.jpg';
-import bakeryImg from '../../assets/restaurant_assets/bakery.jpg';
 
 const CategoryCard = ({ title, imageUrl, link }) => {
   return (
-    <Link to={link} className="block w-full md:w-1/2 lg:w-1/3 p-4">
+    <Link to={link} className="block w-full md:w-full lg:w-full p-4">
       <div className="relative h-64 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
         <img 
           src={imageUrl} 
@@ -26,43 +19,10 @@ const CategoryCard = ({ title, imageUrl, link }) => {
   );
 };
 
-const CategoryCards = () => {
-  const categories = [
-    {
-      title: 'Fast Food',
-      imageUrl: fastFoodImg,
-      link: '/category/fast_food',
-    },
-    {
-      title: 'Traditional',
-      imageUrl: traditionalImg,
-      link: '/category/traditional',
-    },
-    {
-      title: 'Asian',
-      imageUrl: asianImg,
-      link: '/category/asian',
-    },
-    {
-      title: 'Western',
-      imageUrl: westernImg,
-      link: '/category/western',
-    },
-    {
-      title: 'Healthy',
-      imageUrl: healthyImg,
-      link: '/category/healthy',
-    },
-    {
-      title: 'Bakeries',
-      imageUrl: bakeryImg,
-      link: '/category/bakery',
-    },
-  ];
-
+const CategoryCards = ({ categories }) => {
   return (
     <div className="py-12 px-4 max-w-7xl mx-auto">
-      <div className="flex flex-wrap -mx-4">
+      <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {categories.map((category, index) => (
           <CategoryCard 
             key={index}
