@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { FaArrowLeft, FaSearch } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import restaurantApi from "../../api/restaurantAPI";
 import RestaurantCard from "../../components/restaurant/RestaurantCards";
 
@@ -55,49 +55,41 @@ const CategoryPage = () => {
   }, [type, title]);
 
   return (
-    <div className="w-full">
-      {/* Breadcrumb navigation */}
-      <div className="flex justify-between items-center px-4 py-2 border-b">
-        <div className="text-gray-500">
-          <span>Categories</span>
-          <span className="mx-2">›</span>
-          <span className="text-primary">{title}</span>
+    <div className="w-full bg-lightgray min-h-screen">
+      {/* Breadcrumb navigation with enhanced styling */}
+      <div className="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
+        <div className="text-gray-600 font-medium flex items-center">
+          <Link to="/landing-page" className="hover:text-primary transition-colors">Restaurant Categories</Link>
+          <span className="mx-2 text-gray-400">›</span>
+          <span className="text-primary font-semibold">{title}</span>
         </div>
-        <Link to="/" className="text-primary flex items-center">
-          <FaArrowLeft className="mr-1" />
+        <Link to="/landing-page" className="text-primary hover:text-secondary flex items-center transition-all duration-300 hover:translate-x-[-4px]">
+          <FaArrowLeft className="mr-2" />
           <span>Back</span>
         </Link>
       </div>
 
       {/* Page title */}
-      <div className="border-b pb-4">
-        <h1 className="text-2xl font-bold px-4 pt-4 text-secondary">
-          Restaurants with {title}
-        </h1>
-      </div>
-
-      {/* Search bar */}
-      <div className="px-4 py-4">
-        <div className="relative max-w-full">
-          <input
-            type="text"
-            placeholder="Search for a restaurant or a food item"
-            className="w-full p-3 pl-12 rounded-lg bg-pink-50 text-gray-700"
-          />
-          <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        </div>
-      </div>
+<div className="bg-white border-b shadow-sm mb-6 px-6 py-4">
+  <h1 className="text-3xl font-bold text-secondary text-left">
+    {title}
+  </h1>
+</div>
 
       {/* Restaurant listings */}
-      <div className="px-4 space-y-4">
+      <div className="max-w-5xl mx-auto px-6 pb-12">
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <div className="bg-white p-12 rounded-lg shadow-md">
+            <p className="text-center text-lg text-gray-600">Loading restaurants...</p>
+          </div>
         ) : restaurants.length === 0 ? (
-          <p className="text-center text-red-500">
-            No restaurants found in this category.
-          </p>
+          <div className="bg-white p-12 rounded-lg shadow-md">
+            <p className="text-center text-lg text-red-500">
+              No restaurants found in this category.
+            </p>
+          </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {restaurants.map((restaurant) => (
               <RestaurantCard key={restaurant._id} restaurant={restaurant} />
             ))}
