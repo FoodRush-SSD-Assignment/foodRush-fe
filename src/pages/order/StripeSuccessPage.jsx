@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import orderApi from "../../api/orderApi";
 import { FaCheckCircle } from "react-icons/fa";
 
 const StripeSuccessPage = () => {
   const { orderId: orderIdFromParams } = useParams();
   const [orderDetails, setOrderDetails] = useState(null);
-  const [loading, setLoading] = useState(true); // add loading state
-  const [error, setError] = useState(null); // add error state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleSuccessFlow = async () => {
@@ -171,7 +172,9 @@ const StripeSuccessPage = () => {
                 <div className="flex justify-between items-center font-medium">
                   <span>Total Paid:</span>
                   <span className="text-xl">
-                    LKR {orderDetails.totalPrice.toFixed(2)}
+                    {typeof orderDetails.totalAmount === "number"
+                      ? `LKR ${orderDetails.totalAmount.toFixed(2)}`
+                      : "N/A"}
                   </span>
                 </div>
               </div>
@@ -179,7 +182,9 @@ const StripeSuccessPage = () => {
 
             {/* Action Button */}
             <div className="mt-8 flex justify-center">
-              <button className="px-8 py-3 bg-primary text-white rounded-full hover:opacity-90 hover:scale-105 transition-all shadow-md">
+              <button
+                onClick={() => navigate("/myorders")} 
+                className="px-8 py-3 bg-primary text-white rounded-full hover:opacity-90 hover:scale-105 transition-all shadow-md">
                 Track Order
               </button>
             </div>

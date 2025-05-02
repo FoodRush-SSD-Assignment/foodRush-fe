@@ -31,7 +31,7 @@ const CheckoutDetailsForm = ({
               <div className="text-base">
                 {formData.mobileNo || "0766902686"}
               </div>
-              <div className="text-sm text-gray-500">Senith</div>
+              {/* <div className="text-sm text-gray-500">Senith</div> */}
             </div>
           </div>
         </div>
@@ -44,7 +44,7 @@ const CheckoutDetailsForm = ({
               <div className="text-base">
                 {formData.address || "No.296, Main Street, Colombo"}
               </div>
-              <div className="text-sm text-gray-500">Colombo 13</div>
+              {/* <div className="text-sm text-gray-500">Colombo 13</div> */}
             </div>
           </div>
         </div>

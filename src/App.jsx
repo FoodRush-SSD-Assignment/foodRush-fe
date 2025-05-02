@@ -44,6 +44,8 @@ import CheckoutPage from "./pages/order/CheckoutPage";
 import SuccessPage from "./pages/order/SuccessPage";
 // delivery services
 import StripeSuccessPage from "./pages/order/StripeSuccessPage";
+import MyOrdersPage from "./pages/order/MyOrdersPage";
+import OrderHistoryPage from "./pages/order/OrderHistoryPage";
 import ReadyOrders from "./pages/delivery-services/ReadyOrders";
 import Maplocation from "./pages/delivery-services/Maplocation";
 import OrderStatus from "./pages/delivery-services/OrderStatus";
@@ -92,6 +94,8 @@ const App = () => {
 
           <Route path="/success/:orderId" element={<SuccessPage />} />
           <Route path="/stripe-success" element={<StripeSuccessPage />} />
+          <Route path="/myorders" element={<MyOrdersPage />} />
+          <Route path="/order-history" element={<OrderHistoryPage />} />
           
           <Route path="/readyorders" element={<ReadyOrders />} />
           <Route path="/maplocation" element={<Maplocation />} />
