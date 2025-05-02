@@ -7,6 +7,7 @@ import {
   FaUserCircle,
   FaTruck,
   FaTable,
+  FaBuilding
 } from "react-icons/fa";
 import { showConfirmation, showLoading } from "../../utils/alertService";
 import Swal from "sweetalert2";

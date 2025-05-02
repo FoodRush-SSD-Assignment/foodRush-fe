@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import restaurantApi from '../../api/restaurantAPI';
 import { useParams, useNavigate } from 'react-router-dom';
+import { showSuccess, showError } from '../../utils/alertService';
 
 const AddRestaurantForm = () => {
   const { id } = useParams();
@@ -11,6 +12,7 @@ const AddRestaurantForm = () => {
     location: '',
     contactNumber: '',
     category: '',
+    image: null, 
   });
 
   const [message, setMessage] = useState('');
@@ -51,50 +53,71 @@ const AddRestaurantForm = () => {
     });
   };
 
+  // Added handler for file input changes
+  const handleFileChange = (e) => {
+    setFormData({
+      ...formData,
+      image: e.target.files[0],
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Log formData to check if ownerId is correctly set
+  
     console.log('Form Data:', formData);
-
+  
     try {
+      // Create FormData object for multipart/form-data submission
+      const formDataToSend = new FormData();
+      formDataToSend.append('restaurantName', formData.restaurantName);
+      formDataToSend.append('ownerId', formData.ownerId);
+      formDataToSend.append('location', formData.location);
+      formDataToSend.append('contactNumber', formData.contactNumber);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('image', formData.image);
+  
       const res = await restaurantApi.post(
         '/restaurants',
-        formData,
+        formDataToSend,
         {
           headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
-
+  
       console.log('Response:', res.data);
-      setMessage('Restaurant added successfully!');
-      setMessageType('success');
-
-      // Clear form
+  
+      // Show success alert and then navigate back
+      await showSuccess('Success!', 'Restaurant added successfully!');
+      navigate(-1);
+  
+      // Optionally reset the form (if the user stays on this page)
       setFormData({
         restaurantName: '',
-        ownerId: formData.ownerId, // Keep ownerId, it will stay as the logged-in user's ID
+        ownerId: formData.ownerId,
         location: '',
         contactNumber: '',
         category: '',
+        image: null,
       });
-
+      
+      // Reset file input
+      const fileInput = document.querySelector('input[type="file"]');
+      if (fileInput) fileInput.value = "";
+  
     } catch (error) {
       console.error('Error adding restaurant:', error);
-      setMessageType('error');
-
+  
       if (error.response) {
         console.error('Error response data:', error.response.data);
-        setMessage(`Error adding restaurant: ${error.response.data.message || error.response.data.error}`);
+        showError('Error', error.response.data.message || error.response.data.error);
       } else if (error.request) {
         console.error('Error request:', error.request);
-        setMessage('No response from server. Please try again later.');
+        showError('Error', 'No response from server. Please try again later.');
       } else {
         console.error('Error message:', error.message);
-        setMessage('An unexpected error occurred. Please try again.');
+        showError('Error', 'An unexpected error occurred. Please try again.');
       }
     }
   };
@@ -119,7 +142,7 @@ const AddRestaurantForm = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5" encType="multipart/form-data">
         {/* Owner ID field is hidden from the user but still in the form data */}
         <input
           type="hidden"
@@ -183,6 +206,22 @@ const AddRestaurantForm = () => {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* New Image Upload Field */}
+        <div className="mt-6">
+          <label className="block mb-2 font-medium text-secondary">Restaurant Image</label>
+          <div className="border-2 border-dashed border-darkgrey rounded-md p-4 text-center">
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleFileChange}
+              required
+              className="w-full"
+            />
+            <p className="text-sm text-gray-500 mt-2">Upload a high-quality image of your restaurant</p>
+          </div>
         </div>
 
         <div className="pt-4">

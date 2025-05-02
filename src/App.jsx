@@ -25,7 +25,7 @@ import AllRestaurants from "./components/admin/AllRestaurants";
 import AllUsers from "./components/admin/AllUsers";
 import UserPage from "./components/admin/UserPage";
 
-//rest owner services
+//restaurant services
 import OwnerWorkPage from '../src/pages/restaurant/OwnerWorkPage';
 import ViewRestaurants from './components/restOwner/ViewRestaurants';
 import ViewRestDetails from './components/restOwner/ViewRestDetails';

@@ -67,7 +67,12 @@ function ViewOrders() {
 
   return (
     <div className="p-8">
-      <h1 className="text-4xl font-bold text-primary mb-8">Orders for Restaurant</h1>
+      {/* Page title */}
+<div className="bg-white border-b shadow-sm mb-6 px-6 py-4">
+  <h1 className="text-3xl font-bold text-secondary text-left">
+    Orders
+  </h1>
+</div>
 
       {loading ? (
         <div className="p-6 bg-lightgray border border-darkgrey text-secondary rounded-xl">
