@@ -72,6 +72,7 @@ const MerchantLoginForm = () => {
       );
     }
   };
+  
 
   return (
     <div className="w-full max-w-md p-8 bg-white/80 backdrop-blur-md rounded-lg shadow-lg">
