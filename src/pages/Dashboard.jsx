@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect  ,useState} from "react";
+
 import AdminPanel from "../components/merchantDashboard/AdminPanel";
 import RestaurantManagement from "../components/merchantDashboard/RestaurantManagement";
 import DeliveryTasks from "../components/merchantDashboard/DeliveryTasks";
 
 const Dashboard = () => {
+
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Get user from token or localStorage (simplified)
+  
     const tokenData = localStorage.getItem("user");
     if (tokenData) {
       const parsed = JSON.parse(tokenData);
@@ -16,6 +18,8 @@ const Dashboard = () => {
   }, []);
 
   if (!user) return <div className="p-8">Loading...</div>;
+
+  
 
   return (
     <>
