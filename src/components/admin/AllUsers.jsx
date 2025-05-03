@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import authApi from "../../api/authAPI";
+import authApi from "../../api/authApi.js";
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);

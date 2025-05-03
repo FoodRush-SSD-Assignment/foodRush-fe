@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import logo2 from "../../../assets/logo2.png";
 import { FaStore, FaMotorcycle } from "react-icons/fa"; // Import icons
 import { useNavigate } from "react-router-dom";
-import authApi from "../../../api/authAPI";
+import authApi from "../../../api/authApi.js";
 import { showSuccess, showError } from "../../../utils/alertService";
 
 const MerchantRegistrationForm = () => {

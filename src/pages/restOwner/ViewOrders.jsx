@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import OrderCard from '../../components/restOwner/OrderCard';
-import orderApi from '../../api/orderApi';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import OrderCard from "../../components/restOwner/OrderCard";
+import orderApi from "../../api/orderApi.js";
 
 function ViewOrders() {
   const { restaurantId } = useParams();
@@ -13,49 +13,54 @@ function ViewOrders() {
   useEffect(() => {
     const fetchOrders = async () => {
       if (!restaurantId) {
-        setError('Restaurant ID is missing.');
+        setError("Restaurant ID is missing.");
         setLoading(false);
         return;
       }
 
       console.log("Restaurant ID from params:", restaurantId);
-      setDebugInfo(prev => ({ ...prev, restaurantIdFromParams: restaurantId }));
+      setDebugInfo((prev) => ({
+        ...prev,
+        restaurantIdFromParams: restaurantId,
+      }));
 
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          setError('Authentication token is missing. Please log in again.');
+          setError("Authentication token is missing. Please log in again.");
           setLoading(false);
           return;
         }
 
         const endpoint = `/order-service/order/restaurant/${restaurantId}`;
         console.log("Making API request to:", endpoint);
-        setDebugInfo(prev => ({ ...prev, apiEndpoint: endpoint }));
-        
+        setDebugInfo((prev) => ({ ...prev, apiEndpoint: endpoint }));
+
         const response = await orderApi.get(endpoint, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
-        
+
         console.log("API Response:", response.data);
-        setDebugInfo(prev => ({ ...prev, apiResponse: response.data }));
-        
+        setDebugInfo((prev) => ({ ...prev, apiResponse: response.data }));
+
         setOrders(response.data);
       } catch (err) {
         console.error("Error details:", err);
-        setDebugInfo(prev => ({ 
-          ...prev, 
+        setDebugInfo((prev) => ({
+          ...prev,
           errorMessage: err.message,
           errorResponse: err.response?.data,
-          errorStatus: err.response?.status
+          errorStatus: err.response?.status,
         }));
-        
-        const errorMessage = err.response 
-          ? `Error ${err.response.status}: ${err.response.data?.message || err.response.statusText}` 
-          : err.message || 'Error fetching orders.';
-          
+
+        const errorMessage = err.response
+          ? `Error ${err.response.status}: ${
+              err.response.data?.message || err.response.statusText
+            }`
+          : err.message || "Error fetching orders.";
+
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -68,16 +73,16 @@ function ViewOrders() {
   return (
     <div className="p-8">
       {/* Page title */}
-<div className="bg-white border-b shadow-sm mb-6 px-6 py-4">
-  <h1 className="text-3xl font-bold text-secondary text-left">
-    Orders
-  </h1>
-</div>
+      <div className="bg-white border-b shadow-sm mb-6 px-6 py-4">
+        <h1 className="text-3xl font-bold text-secondary text-left">Orders</h1>
+      </div>
 
       {loading ? (
         <div className="p-6 bg-lightgray border border-darkgrey text-secondary rounded-xl">
           <p className="text-lg font-medium">Loading orders...</p>
-          <p className="text-sm mt-2">Restaurant ID: {restaurantId || "Not found"}</p>
+          <p className="text-sm mt-2">
+            Restaurant ID: {restaurantId || "Not found"}
+          </p>
         </div>
       ) : error ? (
         <div className="p-6 bg-red-100 border border-red-400 text-red-700 rounded-xl">
@@ -86,7 +91,9 @@ function ViewOrders() {
 
           <div className="mt-4 border-t border-red-300 pt-4">
             <p className="font-bold text-sm mb-2">Debug Information:</p>
-            <p className="text-sm">Restaurant ID: {restaurantId || "Not found"}</p>
+            <p className="text-sm">
+              Restaurant ID: {restaurantId || "Not found"}
+            </p>
             <pre className="text-xs bg-gray-200 p-3 rounded overflow-x-auto">
               {JSON.stringify(debugInfo, null, 2)}
             </pre>
@@ -95,8 +102,12 @@ function ViewOrders() {
       ) : (
         <>
           <div className="mb-6 bg-lightgray border border-darkgrey p-4 rounded-lg">
-            <p className="font-semibold text-secondary">Restaurant ID: {restaurantId}</p>
-            <p className="text-sm text-secondary">Total Orders: {orders.length}</p>
+            <p className="font-semibold text-secondary">
+              Restaurant ID: {restaurantId}
+            </p>
+            <p className="text-sm text-secondary">
+              Total Orders: {orders.length}
+            </p>
           </div>
 
           {orders.length > 0 ? (

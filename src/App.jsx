@@ -37,6 +37,7 @@ import AddRestaurantForm from "./components/restOwner/AddRestaurent";
 import AllDrivers from "./components/admin/AllDrivers";
 import ViewDriver from "./components/admin/ViewDriver";
 import UserProfile from "./components/UserProfile";
+import MerchantProfile from "./components/MerchantProfile";
 
 //order services
 import CartPage from "./pages/order/CartPage";
@@ -75,6 +76,7 @@ const App = () => {
           <Route path="/admin/alldrivers" element={<AllDrivers />} />
           <Route path="/view-driver/:driverId" element={<ViewDriver />} />
           <Route path="/myaccount" element={<UserProfile />} />
+          <Route path="/merchant-account" element={<MerchantProfile />} />
 
           <Route path="/admin/restaurant/:id" element={<RestaurantDetails />} />
           <Route path="/admin/restaurants" element={<AllRestaurants />} />

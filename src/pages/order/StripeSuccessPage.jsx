@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import orderApi from "../../api/orderApi";
+import orderApi from "../../api/orderApi.js";
 import { FaCheckCircle } from "react-icons/fa";
 
 const StripeSuccessPage = () => {
@@ -30,8 +30,8 @@ const StripeSuccessPage = () => {
         }
 
         // Step 1: Update payment status to 'Paid'
-        await orderApi.patch(
-          `/order-service/order/${orderId}/pay`,
+        await orderApi.put(
+          `/order-service/order/updateOrderAfterCheckout/${orderId}`,
           {
             paymentStatus: "paid",
             status: "confirmed",
@@ -183,8 +183,9 @@ const StripeSuccessPage = () => {
             {/* Action Button */}
             <div className="mt-8 flex justify-center">
               <button
-                onClick={() => navigate("/myorders")} 
-                className="px-8 py-3 bg-primary text-white rounded-full hover:opacity-90 hover:scale-105 transition-all shadow-md">
+                onClick={() => navigate("/myorders")}
+                className="px-8 py-3 bg-primary text-white rounded-full hover:opacity-90 hover:scale-105 transition-all shadow-md"
+              >
                 Track Order
               </button>
             </div>

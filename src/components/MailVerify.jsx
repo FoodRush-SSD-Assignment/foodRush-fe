@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo2 from "../assets/logo2.png";
-import authApi from "../api/authAPI";
+import authApi from "../api/authApi.js";
 // Assuming you have some kind of toast functions
 import { showSuccess, showError } from "../utils/alertService";
 

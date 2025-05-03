@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import authApi from "../../api/authAPI";
+import authApi from "../../api/authApi.js";
 import axios from "axios"; // Add axios for fetching restaurants
-import restaurantApi from "../../api/restaurantAPI";
-import deliveryApi from "../../api/deliveryAPI";
+import restaurantApi from "../../api/restaurantApi.js";
+import deliveryApi from "../../api/deliveryApi.js";
 import { FaCar, FaMotorcycle } from "react-icons/fa";
 
 const AdminPanel = () => {
@@ -75,6 +75,8 @@ const AdminPanel = () => {
 
   // Helper function to render vehicle type icons
   const getVehicleIcon = (vehicle) => {
+    if (!vehicle || typeof vehicle !== "string") return null;
+
     switch (vehicle.toLowerCase()) {
       case "car":
         return <FaCar />;
@@ -192,6 +194,7 @@ const AdminPanel = () => {
           {drivers.map((driver) => (
             <div
               key={driver._id}
+              onClick={() => navigate(`/view-driver/${driver.userId}`)}
               className="bg-lightgray rounded border-darkgrey border p-4
     hover:bg-gray-100 hover:shadow-md hover:scale-[1.01] 
     transition-all duration-200 cursor-pointer"
@@ -211,7 +214,10 @@ const AdminPanel = () => {
                 <div className="flex items-center gap-2">
                   <span className="text-primary text-sm flex items-center font-medium">
                     {getVehicleIcon(driver.vehicle)}
-                    <span className="ml-1">{driver.vehicleNumber}</span>
+                    <span className="ml-1">
+                      {" "}
+                      {driver.vehicleNumber || "N/A"}
+                    </span>
                   </span>
                 </div>
               </div>
@@ -224,14 +230,14 @@ const AdminPanel = () => {
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-secondary font-medium">New Restaurants</h3>
           <a
-            href="#"
+            href="admin/restaurants"
             className="text-primary text-sm hover:text-blue-500 transition-all"
           >
             See All
           </a>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          {restaurants.map((restaurant) => (
+          {restaurants.slice(0, 6).map((restaurant) => (
             <div
               key={restaurant._id}
               className="bg-white rounded shadow-sm overflow-hidden hover:scale-105 transform hover:shadow-xl transition-all"

@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import CartItem from "../../components/order/CartItem";
-import orderApi from "../../api/orderApi";
+import orderApi from "../../api/orderApi.js";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [restaurantName, setRestaurantName] = useState("");
   const [loading, setLoading] = useState(true);
-  
+
   const navigate = useNavigate();
   const [cartId, setCartId] = useState("");
 

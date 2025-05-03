@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import orderApi from "../../api/orderApi";
+import orderApi from "../../api/orderApi.js";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import StatusBadge from "../../components/order/StatusBadge";
 import Modal from "../../components/order/Modal";
@@ -26,9 +26,12 @@ const MyOrdersPage = () => {
 
   const openOrderDetails = async (orderId) => {
     try {
-      const res = await orderApi.get(`/order-service/order/my-orders/${orderId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await orderApi.get(
+        `/order-service/order/my-orders/${orderId}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       setSelectedOrder(res.data);
       setIsModalOpen(true);
     } catch (error) {
@@ -76,10 +79,13 @@ const MyOrdersPage = () => {
       fetchOrders(); // Refresh the orders after cancelling
       console.log(response.data.message);
     } catch (error) {
-      console.error("Error cancelling order:", error.response?.data?.message || error.message);
+      console.error(
+        "Error cancelling order:",
+        error.response?.data?.message || error.message
+      );
       window.alert(error.response?.data?.message || "Failed to cancel order.");
     }
-  };  
+  };
 
   return (
     <div>
@@ -119,13 +125,17 @@ const MyOrdersPage = () => {
                   <div className="flex justify-between items-center">
                     {/* First Column */}
                     <div className="flex flex-col">
-                      <h3 className="font-semibold">Order ID: {order.orderId}</h3>
+                      <h3 className="font-semibold">
+                        Order ID: {order.orderId}
+                      </h3>
                       <p className="text-sm text-gray-600">
                         Restaurant: {order.restaurantName}
                       </p>
                       <div>
                         <hr />
-                        <p className="text-sm font-semibold text-gray-600">Items:</p>
+                        <p className="text-sm font-semibold text-gray-600">
+                          Items:
+                        </p>
                         <ul className="text-sm text-gray-600">
                           {order.items.map((item, index) => (
                             <li key={index}>
@@ -146,14 +156,23 @@ const MyOrdersPage = () => {
                       {/* Cancel Order Button */}
                       <button
                         className={`px-4 py-2 rounded ${
-                          order.status === "pending" || order.status === "confirmed"
+                          order.status === "pending" ||
+                          order.status === "confirmed"
                             ? "bg-red-500 text-white hover:bg-red-600"
                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
-                        disabled={!(order.status === "pending" || order.status === "confirmed")}
+                        disabled={
+                          !(
+                            order.status === "pending" ||
+                            order.status === "confirmed"
+                          )
+                        }
                         onClick={(e) => {
                           e.stopPropagation(); // To prevent opening order details
-                          if (order.status === "pending" || order.status === "confirmed") {
+                          if (
+                            order.status === "pending" ||
+                            order.status === "confirmed"
+                          ) {
                             cancelOrderByCustomer(order.orderId);
                           }
                         }}
@@ -164,7 +183,10 @@ const MyOrdersPage = () => {
                       {/* Price */}
                       <div className="flex flex-col items-end">
                         <p className="text-lg font-bold">
-                          Rs. {order.totalAmount ? order.totalAmount.toFixed(2) : "N/A"}
+                          Rs.{" "}
+                          {order.totalAmount
+                            ? order.totalAmount.toFixed(2)
+                            : "N/A"}
                         </p>
                       </div>
 
@@ -174,7 +196,10 @@ const MyOrdersPage = () => {
                           className="p-2 text-xl"
                           onClick={(e) => {
                             e.stopPropagation();
-                            toggleOrderVisibility(order.orderId, order.isHidden);
+                            toggleOrderVisibility(
+                              order.orderId,
+                              order.isHidden
+                            );
                           }}
                         >
                           {order.isHidden ? <FaEyeSlash /> : <FaEye />}
@@ -189,27 +214,25 @@ const MyOrdersPage = () => {
 
         {/* Completed Orders Section */}
         <h3 className="text-xl font-semibold mb-2 mt-8">Completed Orders</h3>
-        {orders.filter(
-          (order) =>
-            [
-              "delivered",
-              "cancelled_by_customer",
-              "cancelled_by_restaurant",
-              "cancelled_by_delivery",
-            ].includes(order.status)
+        {orders.filter((order) =>
+          [
+            "delivered",
+            "cancelled_by_customer",
+            "cancelled_by_restaurant",
+            "cancelled_by_delivery",
+          ].includes(order.status)
         ).length === 0 ? (
           <p>No completed orders found.</p>
         ) : (
           <div className="grid gap-4">
             {orders
-              .filter(
-                (order) =>
-                  [
-                    "delivered",
-                    "cancelled_by_customer",
-                    "cancelled_by_restaurant",
-                    "cancelled_by_delivery",
-                  ].includes(order.status)
+              .filter((order) =>
+                [
+                  "delivered",
+                  "cancelled_by_customer",
+                  "cancelled_by_restaurant",
+                  "cancelled_by_delivery",
+                ].includes(order.status)
               )
               .map((order) => (
                 <div
@@ -220,13 +243,17 @@ const MyOrdersPage = () => {
                   <div className="flex justify-between items-center">
                     {/* First Column */}
                     <div className="flex flex-col">
-                      <h3 className="font-semibold">Order ID: {order.orderId}</h3>
+                      <h3 className="font-semibold">
+                        Order ID: {order.orderId}
+                      </h3>
                       <p className="text-sm text-gray-600">
                         Restaurant: {order.restaurantName}
                       </p>
                       <div>
                         <hr />
-                        <p className="text-sm font-semibold text-gray-600">Items:</p>
+                        <p className="text-sm font-semibold text-gray-600">
+                          Items:
+                        </p>
                         <ul className="text-sm text-gray-600">
                           {order.items.map((item, index) => (
                             <li key={index}>
@@ -246,9 +273,12 @@ const MyOrdersPage = () => {
                     <div className="flex items-center gap-60">
                       {/* Price */}
                       <div className="flex flex-col items-end">
-                      <p className="text-lg font-bold">
-                        Rs. {order.totalAmount ? order.totalAmount.toFixed(2) : "N/A"}
-                      </p>
+                        <p className="text-lg font-bold">
+                          Rs.{" "}
+                          {order.totalAmount
+                            ? order.totalAmount.toFixed(2)
+                            : "N/A"}
+                        </p>
                       </div>
 
                       {/* Toggle Button */}
@@ -257,7 +287,10 @@ const MyOrdersPage = () => {
                           className="p-2 text-xl"
                           onClick={(e) => {
                             e.stopPropagation();
-                            toggleOrderVisibility(order.orderId, order.isHidden);
+                            toggleOrderVisibility(
+                              order.orderId,
+                              order.isHidden
+                            );
                           }}
                         >
                           {order.isHidden ? <FaEyeSlash /> : <FaEye />}
@@ -279,18 +312,29 @@ const MyOrdersPage = () => {
             <div className="flex space-x-8">
               {/* Left Column */}
               <div className="flex-1">
-                <p><strong>Order ID -</strong> {selectedOrder.orderId}</p>
-                <p><strong>Restaurant -</strong> {selectedOrder.restaurantName}</p>
+                <p>
+                  <strong>Order ID -</strong> {selectedOrder.orderId}
+                </p>
+                <p>
+                  <strong>Restaurant -</strong> {selectedOrder.restaurantName}
+                </p>
                 <br />
-                <p><strong>Status -</strong> <StatusBadge status={selectedOrder.status} /></p>
+                <p>
+                  <strong>Status -</strong>{" "}
+                  <StatusBadge status={selectedOrder.status} />
+                </p>
                 <br />
-                <p><strong>Total Price -</strong> Rs. {selectedOrder.totalAmount.toFixed(2)}</p>
+                <p>
+                  <strong>Total Price -</strong> Rs.{" "}
+                  {selectedOrder.totalAmount.toFixed(2)}
+                </p>
 
                 <h3 className="mt-4 font-semibold">Items</h3>
                 <ul className="list-disc ml-6">
                   {selectedOrder.items.map((item, index) => (
                     <li key={index}>
-                      {item.name} - {item.quantity} x Rs. {item.price.toFixed(2)}
+                      {item.name} - {item.quantity} x Rs.{" "}
+                      {item.price.toFixed(2)}
                     </li>
                   ))}
                 </ul>
@@ -299,9 +343,7 @@ const MyOrdersPage = () => {
               {/* Right Column */}
               <div className="flex-1">
                 <h3 className="mt-4 font-semibold">Delivery Address</h3>
-                <p>
-                  {selectedOrder.deliveryAddress}
-                </p>
+                <p>{selectedOrder.deliveryAddress}</p>
 
                 <h3 className="mt-4 font-semibold">Payments</h3>
                 <p>Payment Method - {selectedOrder.paymentMethod}</p>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import restaurantApi from "../../api/restaurantApi";
+import restaurantApi from "../../api/restaurantApi.js";
 
 const ViewRestDetails = () => {
   const { id } = useParams();
@@ -29,7 +29,9 @@ const ViewRestDetails = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-lightgray">
-        <div className="text-secondary text-xl">Loading restaurant details...</div>
+        <div className="text-secondary text-xl">
+          Loading restaurant details...
+        </div>
       </div>
     );
   }
@@ -39,8 +41,10 @@ const ViewRestDetails = () => {
       <div className="flex justify-center items-center h-screen bg-lightgray">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
           <div className="text-primary text-2xl mb-4">Restaurant not found</div>
-          <p className="text-secondary mb-6">The restaurant you're looking for doesn't exist or was removed.</p>
-          <button 
+          <p className="text-secondary mb-6">
+            The restaurant you're looking for doesn't exist or was removed.
+          </p>
+          <button
             onClick={() => navigate(-1)}
             className="bg-primary text-white px-6 py-2 rounded-md hover:bg-opacity-90 transition-all"
           >
@@ -84,7 +88,9 @@ const ViewRestDetails = () => {
               <span className="inline-block px-3 py-1 bg-white bg-opacity-20 rounded-full text-sm">
                 {restaurant.status?.toUpperCase() || "N/A"}
               </span>
-              <span className="text-sm ml-4 text-white text-opacity-80">ID: {id}</span>
+              <span className="text-sm ml-4 text-white text-opacity-80">
+                ID: {id}
+              </span>
             </div>
           </div>
 
@@ -92,26 +98,39 @@ const ViewRestDetails = () => {
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="border-b border-darkgrey pb-4">
-                <h2 className="font-semibold text-secondary mb-2 text-sm uppercase">Category</h2>
-                <p className="text-lg capitalize">{restaurant.category?.replace("_", " ") || "N/A"}</p>
+                <h2 className="font-semibold text-secondary mb-2 text-sm uppercase">
+                  Category
+                </h2>
+                <p className="text-lg capitalize">
+                  {restaurant.category?.replace("_", " ") || "N/A"}
+                </p>
               </div>
               <div className="border-b border-darkgrey pb-4">
-                <h2 className="font-semibold text-secondary mb-2 text-sm uppercase">Contact Number</h2>
+                <h2 className="font-semibold text-secondary mb-2 text-sm uppercase">
+                  Contact Number
+                </h2>
                 <p className="text-lg">{restaurant.contactNumber || "N/A"}</p>
               </div>
               <div className="border-b border-darkgrey pb-4">
-                <h2 className="font-semibold text-secondary mb-2 text-sm uppercase">Location</h2>
+                <h2 className="font-semibold text-secondary mb-2 text-sm uppercase">
+                  Location
+                </h2>
                 <p className="text-lg">{restaurant.location || "N/A"}</p>
               </div>
               <div className="border-b border-darkgrey pb-4">
-                <h2 className="font-semibold text-secondary mb-2 text-sm uppercase">Joined Date</h2>
+                <h2 className="font-semibold text-secondary mb-2 text-sm uppercase">
+                  Joined Date
+                </h2>
                 <p className="text-lg">
                   {restaurant.createdAt
-                    ? new Date(restaurant.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
+                    ? new Date(restaurant.createdAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )
                     : "N/A"}
                 </p>
               </div>
@@ -124,7 +143,12 @@ const ViewRestDetails = () => {
                   onClick={() => navigate(`/merchant/restaurants/${id}/menu`)}
                   className="bg-primary text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-all flex-1 flex justify-center items-center gap-2"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -139,7 +163,12 @@ const ViewRestDetails = () => {
                   onClick={() => navigate(`/viewOrders/restaurant/${id}`)}
                   className="bg-secondary text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-all flex-1 flex justify-center items-center gap-2"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -153,7 +182,8 @@ const ViewRestDetails = () => {
             ) : (
               <div className="mt-10 p-4 bg-lightgray rounded-md text-center">
                 <p className="text-secondary">
-                  You'll be able to view menu and orders once the restaurant is approved.
+                  You'll be able to view menu and orders once the restaurant is
+                  approved.
                 </p>
               </div>
             )}
