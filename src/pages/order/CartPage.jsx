@@ -1,22 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-// import NavBar from "../../components/NavBar";
 import CartItem from "../../components/order/CartItem";
 import orderApi from "../../api/orderApi";
-import CheckoutDetailsForm from "../../components/order/CheckoutDetailsForm";
-import { showError } from "../../utils/alertService";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [restaurantName, setRestaurantName] = useState("");
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({
-    name: "",
-    contactNumber: "",
-    deliveryAddress: "",
-    paymentMethod: "card",
-  });
+  
   const navigate = useNavigate();
   const [cartId, setCartId] = useState("");
 
@@ -31,10 +23,6 @@ const CartPage = () => {
         setCartItems(res.data.items || []);
         setRestaurantName(res.data.restaurantName || "");
         setCartId(res.data._id || "");
-        setFormData((prev) => ({
-          ...prev,
-          name: `${res.data.customerName || ""}`,
-        }));
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch cart:", err);
@@ -56,35 +44,6 @@ const CartPage = () => {
 
   const deleteItem = (updatedCart) => {
     setCartItems(updatedCart.items);
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handlePlaceOrder = async () => {
-    try {
-      const orderData = {
-        deliveryAddress: formData.deliveryAddress,
-        paymentMethod: formData.paymentMethod,
-        customerMobileNo: formData.contactNumber,
-      };
-
-      const res = await orderApi.post(
-        "/order-service/order/placeOrder",
-        orderData,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-
-      const createdOrderId = res.data.order.orderId;
-      showSuccess("Order placed successfully!");
-      navigate(`/checkout/${createdOrderId}`);
-    } catch (err) {
-      console.error("Failed to place order:", err);
-      showError("Failed to place order. Try again.");
-    }
   };
 
   return (

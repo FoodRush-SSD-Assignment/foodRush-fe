@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import orderApi from "../../api/orderApi";
 import OrderSummary from "../../components/order/OrderSummary";
-import OrderDetailConfirm from "../../components/order/OrderDetailConfirm";
 import CheckoutDetailsForm from "../../components/order/CheckoutDetailsForm";
 import authApi from "../../api/authApi.js";
 import StripeCheckoutButton from "../../components/StripeCheckoutButton";
 import { showSuccess, showError } from "../../utils/alertService";
 
 const CheckoutPage = () => {
-  const { orderId } = useParams();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [cartItems, setCartItems] = useState([{ currency: "lkr" }]);
   const [restaurantName, setRestaurantName] = useState("");
@@ -42,15 +40,14 @@ const CheckoutPage = () => {
     }));
   };
 
-  const handleCardPayment = () => {
-    console.log("Processing Card Payment...");
-    // handle card payment logic here
-  };
+  // const handleCardPayment = () => {
+  //   console.log("Processing Card Payment...");
 
-  const handleCashOrder = () => {
-    console.log("Processing Cash Order...");
-    // handle cash order logic here
-  };
+  // };
+
+  // const handleCashOrder = () => {
+  //   console.log("Processing Cash Order...");
+  // };
 
   const handlePlaceOrder = async () => {
     try {
@@ -70,6 +67,7 @@ const CheckoutPage = () => {
           price: item.price,
         })),
         totalPrice: totalAmount, // Total price computed previously
+        totalAmount: totalAmount, // Total amount including tax and delivery fee
         paymentStatus: "pending", // Payment status initially set to "pending"
         paymentMethod: formData.paymentMethod, // Payment method selected by the user
         status: "pending", // Initial status set to "pending"
@@ -126,10 +124,10 @@ const CheckoutPage = () => {
       );
 
       const createdOrderId = res.data.order.orderId;
-      return createdOrderId; // ✅ return order id if success
+      return createdOrderId; // return order id if success
     } catch (err) {
       console.error("Failed to place order:", err);
-      return null; // ❌ return null if fail
+      return null; // return null if fail
     }
   };
 
@@ -141,7 +139,6 @@ const CheckoutPage = () => {
         });
         setCartItems(res.data.items || []);
         setRestaurantName(res.data.restaurantName || "");
-        setTotalAmount(res.data.totalAmount || 0); // <--- store total amount
       } catch (err) {
         console.error("Failed to fetch cart:", err);
       }
@@ -229,6 +226,8 @@ const CheckoutPage = () => {
             <StripeCheckoutButton
               cartItems={cartItems}
               totalAmount={totalAmount}
+              taxAmount={taxAmount}
+              deliveryFee={deliveryFee}
               handlePlaceOrderBeforeStripe={handlePlaceStripeOrder}
             />
           )}
