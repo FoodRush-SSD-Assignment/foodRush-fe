@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import restaurantApi from "../../api/restaurantAPI";
+import restaurantApi from "../../api/restaurantApi.js";
 import { showSuccess, showError } from "../../utils/alertService";
 import authApi from "../../api/authApi.js";
 

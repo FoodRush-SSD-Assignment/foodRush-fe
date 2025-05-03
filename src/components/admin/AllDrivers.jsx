@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import deliveryApi from "../../api/deliveryAPI";
+import deliveryApi from "../../api/deliveryApi.js";
 import { FaCar, FaMotorcycle, FaEnvelope, FaPhone } from "react-icons/fa";
 
 const AllDrivers = () => {

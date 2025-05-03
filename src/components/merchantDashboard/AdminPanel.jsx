@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authApi from "../../api/authApi.js";
 import axios from "axios"; // Add axios for fetching restaurants
-import restaurantApi from "../../api/restaurantAPI";
-import deliveryApi from "../../api/deliveryAPI";
+import restaurantApi from "../../api/restaurantApi.js";
+import deliveryApi from "../../api/deliveryApi.js";
 import { FaCar, FaMotorcycle } from "react-icons/fa";
 
 const AdminPanel = () => {

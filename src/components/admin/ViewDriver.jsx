@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import deliveryApi from "../../api/deliveryAPI";
+import deliveryApi from "../../api/deliveryApi.js";
 import { FaCar, FaMotorcycle, FaPhone, FaEnvelope } from "react-icons/fa";
 import { showSuccess, showError } from "../../utils/alertService";
 

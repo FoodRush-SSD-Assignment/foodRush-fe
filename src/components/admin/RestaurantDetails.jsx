@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import restaurantApi from "../../api/restaurantApi";
+import restaurantApi from "../../api/restaurantApi.js";
 import { showError, showSuccess } from "../../utils/alertService";
 import {
   FaUtensils,

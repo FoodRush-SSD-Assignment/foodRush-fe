@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import orderApi from "../../api/orderApi";
+import orderApi from "../../api/orderApi.js";
 import OrderSummary from "../../components/order/OrderSummary";
 import CheckoutDetailsForm from "../../components/order/CheckoutDetailsForm";
 import authApi from "../../api/authApi.js";

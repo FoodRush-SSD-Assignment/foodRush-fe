@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; 
-import restaurantApi from "../../api/restaurantAPI";
+import { useParams } from "react-router-dom";
+import restaurantApi from "../../api/restaurantApi.js";
 import { showSuccess, showError } from "../../utils/alertService";
 
 function AddItemForm() {
@@ -33,7 +33,7 @@ function AddItemForm() {
       [name]: value,
     }));
   };
-  
+
   const handleFileChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -49,19 +49,18 @@ function AddItemForm() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setRestaurant(res.data);
-  
+
         // Also update the restaurantName in the formData
         setFormData((prev) => ({
           ...prev,
           restaurantName: res.data.restaurantName,
         }));
-  
       } catch (err) {
         console.error("Failed to fetch restaurant details", err);
         showError("Error", "Failed to fetch restaurant details");
       }
     };
-  
+
     fetchRestaurant();
   }, [id]);
 
@@ -78,16 +77,12 @@ function AddItemForm() {
       formDataToSend.append("restaurantName", restaurant.restaurantName);
       formDataToSend.append("image", formData.image);
 
-      const res = await restaurantApi.post(
-        "/items",
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          },
-        }
-      );
+      const res = await restaurantApi.post("/items", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       console.log("Item added successfully:", res.data);
       showSuccess("Success", "Menu item added successfully");
@@ -101,14 +96,19 @@ function AddItemForm() {
         restaurantName: restaurant?.restaurantName || "",
         image: null,
       });
-      
+
       // Reset file input
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = "";
-      
     } catch (error) {
-      console.error("Error adding item:", error.response?.data || error.message);
-      showError("Error", error.response?.data?.message || "Failed to add menu item");
+      console.error(
+        "Error adding item:",
+        error.response?.data || error.message
+      );
+      showError(
+        "Error",
+        error.response?.data?.message || "Failed to add menu item"
+      );
     }
   };
 
@@ -119,10 +119,14 @@ function AddItemForm() {
         encType="multipart/form-data"
         className="max-w-2xl mx-auto p-8 bg-white shadow-lg rounded-lg border border-darkgrey"
       >
-        <h2 className="text-3xl font-bold mb-8 text-primary text-center">Add Menu Item</h2>
+        <h2 className="text-3xl font-bold mb-8 text-primary text-center">
+          Add Menu Item
+        </h2>
 
         <div className="mb-6">
-          <label className="block text-secondary font-semibold mb-2">Item Name</label>
+          <label className="block text-secondary font-semibold mb-2">
+            Item Name
+          </label>
           <input
             type="text"
             name="itemName"
@@ -135,7 +139,9 @@ function AddItemForm() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-secondary font-semibold mb-2">Description</label>
+          <label className="block text-secondary font-semibold mb-2">
+            Description
+          </label>
           <textarea
             name="itemDescription"
             value={formData.itemDescription}
@@ -147,7 +153,9 @@ function AddItemForm() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-secondary font-semibold mb-2">Price ($)</label>
+          <label className="block text-secondary font-semibold mb-2">
+            Price ($)
+          </label>
           <input
             type="number"
             name="itemPrice"
@@ -162,7 +170,9 @@ function AddItemForm() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-secondary font-semibold mb-2">Category</label>
+          <label className="block text-secondary font-semibold mb-2">
+            Category
+          </label>
           <select
             name="itemCategory"
             value={formData.itemCategory}
@@ -178,7 +188,9 @@ function AddItemForm() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-secondary font-semibold mb-2">Restaurant ID</label>
+          <label className="block text-secondary font-semibold mb-2">
+            Restaurant ID
+          </label>
           <input
             type="text"
             name="restaurantId"
@@ -188,13 +200,17 @@ function AddItemForm() {
             required
             readOnly={!!id}
             className={`w-full border border-darkgrey rounded-lg px-4 py-3 focus:outline-none ${
-              id ? "bg-lightgray" : "focus:ring-2 focus:ring-primary focus:border-transparent"
+              id
+                ? "bg-lightgray"
+                : "focus:ring-2 focus:ring-primary focus:border-transparent"
             }`}
           />
         </div>
 
         <div className="mb-6">
-          <label className="block text-secondary font-semibold mb-2">Restaurant Name</label>
+          <label className="block text-secondary font-semibold mb-2">
+            Restaurant Name
+          </label>
           <input
             type="text"
             name="restaurantName"
@@ -204,13 +220,17 @@ function AddItemForm() {
             required
             readOnly={!!restaurant}
             className={`w-full border border-darkgrey rounded-lg px-4 py-3 focus:outline-none ${
-              restaurant ? "bg-lightgray" : "focus:ring-2 focus:ring-primary focus:border-transparent"
+              restaurant
+                ? "bg-lightgray"
+                : "focus:ring-2 focus:ring-primary focus:border-transparent"
             }`}
           />
         </div>
 
         <div className="mb-8">
-          <label className="block text-secondary font-semibold mb-2">Item Image</label>
+          <label className="block text-secondary font-semibold mb-2">
+            Item Image
+          </label>
           <div className="border-2 border-dashed border-darkgrey rounded-lg p-4 text-center">
             <input
               type="file"
@@ -220,7 +240,9 @@ function AddItemForm() {
               required
               className="w-full"
             />
-            <p className="text-sm text-gray-500 mt-2">Upload a high-quality image of your dish</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Upload a high-quality image of your dish
+            </p>
           </div>
         </div>
 
