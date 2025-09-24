@@ -12,6 +12,7 @@ const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
+  const [rateLimited, setRateLimited] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -76,10 +77,19 @@ const LoginForm = () => {
         navigate("/landing-page", { replace: true });
       }, 1000);
     } catch (err) {
-      showError(
-        "Login failed",
-        err.response?.data?.message || "An error occurred"
-      );
+      if (err.response?.status === 429) {
+        showError(
+          "Login rate limit reached",
+          err.response?.data?.error ||
+            "Too many login attempts. Please try again later."
+        );
+        setRateLimited(true); // Disable form
+      } else {
+        showError(
+          "Login failed",
+          err.response?.data?.message || "An error occurred"
+        );
+      }
     }
   };
 
@@ -133,6 +143,7 @@ const LoginForm = () => {
             id="email"
             name="email"
             type="email"
+            disabled={rateLimited} // Disable input if rate limited
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
               errors.email
                 ? "border-red-500 focus:ring-red-500"
@@ -159,6 +170,7 @@ const LoginForm = () => {
               id="password"
               name="password"
               type="password"
+              disabled={rateLimited} // Disable input if rate limited
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white ${
                 errors.password
                   ? "border-red-500 focus:ring-red-500"
@@ -216,11 +228,16 @@ const LoginForm = () => {
           type="submit"
           className="w-full py-2 px-4 rounded-md text-white font-semibold shadow-md"
           style={{ backgroundColor: "#C83C3C" }}
+          disabled={rateLimited} // Disable button if rate limited
         >
           Login
         </button>
       </form>
-
+      {rateLimited && (
+        <p className="mt-4 text-center text-red-600 font-semibold">
+          Too many login attempts. Please try again after 15 minutes.
+        </p>
+      )}
       <p className="mt-6 text-center text-sm text-gray-500">
         Don't have an account?{" "}
         <a
