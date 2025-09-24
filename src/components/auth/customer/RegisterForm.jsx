@@ -49,6 +49,7 @@ const RegistrationForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -641,6 +642,27 @@ const RegistrationForm = () => {
       <p className="text-gray-500 text-center mb-6">
         Join us today! Complete the registration steps below
       </p>
+
+      {/* Social login options */}
+      <div className="flex justify-center gap-6 mb-8">
+        <button
+          className="flex items-center justify-center w-full max-w-xs p-2 rounded-full border border-gray-200 hover:bg-gray-50 bg-white gap-3"
+          style={{ minHeight: "44px" }}
+          onClick={() => {
+            window.location.href = `${API_URL}/auth/google`;
+          }}
+        >
+          <img
+            src={GoogleLogo}
+            alt="Google"
+            className="w-6 h-6 object-contain"
+          />
+          <span className="font-medium text-gray-700">
+            Continue with Google
+          </span>
+        </button>
+        {/* You can add Facebook/Apple here if needed */}
+      </div>
 
       {renderStepIndicator()}
 

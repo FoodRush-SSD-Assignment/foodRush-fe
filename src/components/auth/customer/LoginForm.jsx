@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import logo2 from "../../../assets/logo2.png";
 import { AuthContext } from "../../../context/AuthContext";
 import GoogleLogo from "../../../assets/GoogleLogo.webp";
@@ -8,11 +8,23 @@ import AppleLogo from "../../../assets/AppleLogo.svg";
 import authApi from "../../../api/authApi.js";
 
 import { showSuccess, showError } from "../../../utils/alertService";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const error = params.get("error");
+    if (error) {
+      // Decode error message if encoded
+      showError("Login Error", decodeURIComponent(error));
+    }
+  }, [location.search]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -101,16 +113,25 @@ const LoginForm = () => {
       </p>
 
       {/* Social login options */}
-      {/* <div className="flex justify-center gap-6 mb-8">
-        {[GoogleLogo, FacebookLogo, AppleLogo].map((logo, i) => (
-          <button
-            key={i}
-            className="p-2 rounded-full border border-gray-200 hover:bg-gray-50 bg-white"
-          >
-            <img src={logo} alt="logo" className="w-6 h-6 object-contain" />
-          </button>
-        ))}
-      </div> */}
+      <div className="flex justify-center gap-6 mb-8">
+        <button
+          className="flex items-center justify-center w-full max-w-xs p-2 rounded-full border border-gray-200 hover:bg-gray-50 bg-white gap-3"
+          style={{ minHeight: "44px" }}
+          onClick={() => {
+            window.location.href = `${API_URL}/auth/google`;
+          }}
+        >
+          <img
+            src={GoogleLogo}
+            alt="Google"
+            className="w-6 h-6 object-contain"
+          />
+          <span className="font-medium text-gray-700">
+            Continue with Google
+          </span>
+        </button>
+        {/* You can add Facebook/Apple here if needed */}
+      </div>
 
       {/* <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">

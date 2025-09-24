@@ -1,5 +1,10 @@
 import React from "react";
-import {BrowserRouter as Router,Routes,Route,Navigate,} from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 // Layout
 import AppLayout from "./layouts/AppLayout";
@@ -24,13 +29,14 @@ import EditRestaurant from "./components/admin/EditRestaurant";
 import AllRestaurants from "./components/admin/AllRestaurants";
 import AllUsers from "./components/admin/AllUsers";
 import UserPage from "./components/admin/UserPage";
+import GoogleOAuthSuccess from "./pages/auth/GoogleOAuthSuccess";
 
 //restaurant services
-import OwnerWorkPage from '../src/pages/restaurant/OwnerWorkPage';
-import ViewRestaurants from './components/restOwner/ViewRestaurants';
-import ViewRestDetails from './components/restOwner/ViewRestDetails';
+import OwnerWorkPage from "../src/pages/restaurant/OwnerWorkPage";
+import ViewRestaurants from "./components/restOwner/ViewRestaurants";
+import ViewRestDetails from "./components/restOwner/ViewRestDetails";
 import AddItemForm from "./components/restOwner/AddItemForm";
-import ViewMenu from './pages/restOwner/ViewMenu';
+import ViewMenu from "./pages/restOwner/ViewMenu";
 import ViewOrders from "./pages/restOwner/ViewOrders";
 import AddRestaurantForm from "./components/restOwner/AddRestaurent";
 
@@ -62,6 +68,7 @@ const App = () => {
         <Route path="/merchant-login" element={<MerchantLoginPage />} />
         <Route path="/merchant-register" element={<MerchantRegisterPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/auth/google/success" element={<GoogleOAuthSuccess />} />
 
         {/* Protected Routes with Layout */}
         <Route element={<AppLayout />}>
@@ -87,24 +94,37 @@ const App = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout/:orderId" element={<CheckoutPage />} />
 
-          <Route path="/merchant/view-my-restaurants" element={<ViewRestaurants />} />
-          <Route path="/merchant/add-restaurant/:id" element={<AddRestaurantForm />} />
-          <Route path="/merchant/restaurant-details/:id" element={<ViewRestDetails />} />
+          <Route
+            path="/merchant/view-my-restaurants"
+            element={<ViewRestaurants />}
+          />
+          <Route
+            path="/merchant/add-restaurant/:id"
+            element={<AddRestaurantForm />}
+          />
+          <Route
+            path="/merchant/restaurant-details/:id"
+            element={<ViewRestDetails />}
+          />
           <Route path="/merchant/restaurants/:id/menu" element={<ViewMenu />} />
-          <Route path="/merchant/restaurants/:id/additem" element={<AddItemForm />} />
-          <Route path="/viewOrders/restaurant/:restaurantId" element={<ViewOrders />} />
+          <Route
+            path="/merchant/restaurants/:id/additem"
+            element={<AddItemForm />}
+          />
+          <Route
+            path="/viewOrders/restaurant/:restaurantId"
+            element={<ViewOrders />}
+          />
 
           <Route path="/success/:orderId" element={<SuccessPage />} />
           <Route path="/stripe-success" element={<StripeSuccessPage />} />
           <Route path="/myorders" element={<MyOrdersPage />} />
           <Route path="/order-history" element={<OrderHistoryPage />} />
-          
+
           <Route path="/readyorders" element={<ReadyOrders />} />
           <Route path="/maplocation" element={<Maplocation />} />
           <Route path="/orderstatus" element={<OrderStatus />} />
         </Route>
-
-   
       </Routes>
     </Router>
   );

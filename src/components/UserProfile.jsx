@@ -13,6 +13,7 @@ const UserProfile = () => {
   const [error, setError] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [password, setPassword] = useState("");
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,7 +22,7 @@ const UserProfile = () => {
         const token = localStorage.getItem("token");
         const userString = localStorage.getItem("user");
         const user = userString ? JSON.parse(userString) : null;
-        const userID = user?.id;
+        const userID = user?._id || user?.id;
 
         if (!userID) {
           console.error("User ID not found.");

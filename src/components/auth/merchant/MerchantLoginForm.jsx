@@ -72,7 +72,6 @@ const MerchantLoginForm = () => {
       );
     }
   };
-  
 
   return (
     <div className="w-full max-w-md p-8 bg-white/80 backdrop-blur-md rounded-lg shadow-lg">
@@ -190,6 +189,25 @@ const MerchantLoginForm = () => {
           Login
         </button>
       </form>
+
+      {/* Social login options */}
+      <div className="flex justify-center gap-6 mb-8">
+        <button
+          className="p-2 rounded-full border border-gray-200 hover:bg-gray-50 bg-white"
+          onClick={() => {
+            window.location.href = `${
+              import.meta.env.VITE_API_URL
+            }/auth/google`;
+          }}
+        >
+          <img
+            src={require("../../../assets/GoogleLogo.webp")}
+            alt="Google"
+            className="w-6 h-6 object-contain"
+          />
+        </button>
+        {/* You can add Facebook/Apple here if needed */}
+      </div>
 
       <p className="mt-6 text-center text-sm text-gray-500">
         <a
